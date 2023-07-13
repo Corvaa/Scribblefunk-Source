@@ -1131,10 +1131,9 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 		moveCameraSection();
 
-		vignette = new BGSprite('vignette', 0,0, 1, 1);
+		vignette = new BGSprite('vignette2', 0,0, 1, 1);
 		vignette.screenCenter(XY);
 		vignette.updateHitbox();
-		vignette.alpha = 0;
 		add(vignette);
 
 		healthBarBG = new AttachedSprite('healthBar');
@@ -4992,7 +4991,7 @@ class PlayState extends MusicBeatState
             canReset = false;
             #end
 			cantPress = true; //when cantpress is true you cnat press, when its false you can
-			FlxTween.tween(vignette, {alpha: 1}, 0.25);
+			//FlxTween.tween(vignette, {alpha: 1}, 0.25);
 			FlxTween.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
 			notes.forEachAlive(function(daNote:Note)
                 {
