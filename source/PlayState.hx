@@ -255,6 +255,9 @@ class PlayState extends MusicBeatState
 	var santa:BGSprite;
 	var heyTimer:Float;
 
+	var songCard:FlxSprite;
+	var creditsCard:Flxsprite;
+
 	var bgGirls:BackgroundGirls;
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 	var bgGhouls:BGSprite;
@@ -1134,6 +1137,7 @@ class PlayState extends MusicBeatState
 		vignette = new BGSprite('vignette2', 0,0, 1, 1);
 		vignette.screenCenter(XY);
 		vignette.updateHitbox();
+		vignette.alpha = 0;
 		add(vignette);
 
 		healthBarBG = new AttachedSprite('healthBar');
@@ -1177,6 +1181,22 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = !ClientPrefs.hideHud;
 		add(scoreTxt);
 
+		songCard = new FlxSprite(0, 0).loadGraphic(Paths.image('songname', 'preload'));
+		songCard.scrollFactor.set();
+		songCard.visible = !ClientPrefs.hideHud;
+		songCard.antialiasing = false;
+		songCard.screenCenter();
+		if (SONG.song.toLowerCase() != 'self-portrait')
+		add(songCard);
+
+		songCredits = new FlxSprite(0, 0).loadGraphic(Paths.image('songcredits', 'preload'));
+		songCredits.scrollFactor.set();
+		songCredits.visible = !ClientPrefs.hideHud;
+		songCredits.antialiasing = false;
+		songCredits.screenCenter();
+		if (SONG.song.toLowerCase() != 'self-portrait')
+		add(songCredits);
+
 		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, "BOTPLAY", 32);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botplayTxt.scrollFactor.set();
@@ -1212,6 +1232,8 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		songCard.cameras = [camHUD];
+		creditsCard.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -5161,6 +5183,14 @@ class PlayState extends MusicBeatState
 		{
 			dad.dance();
 		}
+		if (SONG.song.toLowerCase() != 'self-portrait' ? curBeat == 1 : curBeat == 122) {
+			FlxTween.tween(songCard, {x: 40}, 1, {ease: FlxEase.quadOut});
+			FlxTween.tween(songCredits, {x: 50}, 1, {ease: FlxEase.quadOut});
+		}
+
+		if (SONG.song.toLowerCase() != 'self-portrait' ? curBeat == 8 : curBeat == 134) { 
+			FlxTween.tween(songCard, {x: 0}, 1, {ease: FlxEase.quadIn});
+			FlxTween.tween(songCredits, {x: 0}, 1, {ease: FlxEase.quadIn});
 
 		switch (curStage)
 		{
