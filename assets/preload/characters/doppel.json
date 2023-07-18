@@ -1,0 +1,133 @@
+{
+	"animations": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "idle",
+			"indices": [],
+			"name": "DoppleIdle"
+		},
+		{
+			"offsets": [
+				34,
+				70
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singUP",
+			"indices": [],
+			"name": "Doppleup"
+		},
+		{
+			"offsets": [
+				-90,
+				-3
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singRIGHT",
+			"indices": [],
+			"name": "Doppleup"
+		},
+		{
+			"offsets": [
+				111,
+				20
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Doppleleft"
+		},
+		{
+			"offsets": [
+				10,
+				-70
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "Doppledown"
+		},
+		{
+			"offsets": [
+				20,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "attack",
+			"indices": [],
+			"name": "Doppleattack"
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "ded",
+			"indices": [],
+			"name": "Dopplecrash"
+		},
+		{
+			"offsets": [
+				1682,
+				238
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "doppleKILLSYOU",
+			"indices": [],
+			"name": "Doppledeathscreen"
+		},
+		{
+			"offsets": [
+				147,
+				29
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "intro",
+			"indices": [],
+			"name": "Doppleintro"
+		},
+		{
+			"offsets": [
+				100,
+				110
+			],
+			"loop": false,
+			"fps": 24,
+			"anim": "ouch",
+			"indices": [],
+			"name": "Dopplehit"
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/doppel",
+	"position": [
+		0,
+		250
+	],
+	"healthicon": "doppel",
+	"flip_x": false,
+	"healthbar_colors": [
+		69,
+		139,
+		148
+	],
+	"camera_position": [
+		-600,
+		0
+	],
+	"sing_duration": 6.1,
+	"scale": 0.9
+}

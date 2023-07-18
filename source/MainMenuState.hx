@@ -235,7 +235,7 @@ class MainMenuState extends MusicBeatState
 									case 'story_mode':
 										MusicBeatState.switchState(new StoryMenuState());
 									case 'freeplay':
-										PlayState.SONG = Song.loadFromJson('him', 'him');
+										PlayState.SONG = Song.loadFromJson('self-portrait', 'self-portrait');
 										PlayState.isStoryMode = false;
 										PlayState.storyDifficulty = 2;
 										new FlxTimer().start(0.07, function(tmr:FlxTimer)
