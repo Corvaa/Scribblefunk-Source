@@ -255,9 +255,6 @@ class PlayState extends MusicBeatState
 	var santa:BGSprite;
 	var heyTimer:Float;
 
-	var songCard:FlxSprite;
-	var creditsCard:Flxsprite;
-
 	var bgGirls:BackgroundGirls;
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 	var bgGhouls:BGSprite;
@@ -343,7 +340,14 @@ class PlayState extends MusicBeatState
 
 	public var timebeforeGORGOLOZ:FlxText;
 
-	//public var textToTypeGORGOLOZ:FlxText;
+	public var textToTypeGORGOLOZ:FlxText;
+
+	var curWord:String;
+	var curPos:Int = 0;
+
+	var word:String = '';
+
+	var wonType:Bool = false;
 
 	override public function create()
 	{
@@ -1181,22 +1185,6 @@ class PlayState extends MusicBeatState
 		scoreTxt.visible = !ClientPrefs.hideHud;
 		add(scoreTxt);
 
-		songCard = new FlxSprite(0, 0).loadGraphic(Paths.image('songname', 'preload'));
-		songCard.scrollFactor.set();
-		songCard.visible = !ClientPrefs.hideHud;
-		songCard.antialiasing = false;
-		songCard.screenCenter();
-		if (SONG.song.toLowerCase() != 'self-portrait')
-		add(songCard);
-
-		songCredits = new FlxSprite(0, 0).loadGraphic(Paths.image('songcredits', 'preload'));
-		songCredits.scrollFactor.set();
-		songCredits.visible = !ClientPrefs.hideHud;
-		songCredits.antialiasing = false;
-		songCredits.screenCenter();
-		if (SONG.song.toLowerCase() != 'self-portrait')
-		add(songCredits);
-
 		botplayTxt = new FlxText(400, timeBarBG.y + 55, FlxG.width - 800, "BOTPLAY", 32);
 		botplayTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botplayTxt.scrollFactor.set();
@@ -1215,9 +1203,16 @@ class PlayState extends MusicBeatState
 		timebeforeGORGOLOZ.alpha = 0;
 		add(timebeforeGORGOLOZ);
 
+		textToTypeGORGOLOZ = new FlxText(0,0,0, Std.string(curWord), 32);
+		textToTypeGORGOLOZ.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		textToTypeGORGOLOZ.borderSize = 1.25;
+		textToTypeGORGOLOZ.screenCenter(XY);
+		textToTypeGORGOLOZ.alpha = 0;
+		add(textToTypeGORGOLOZ);
+
 		vignette.cameras = [camOther];
 		timebeforeGORGOLOZ.cameras = [camOther];
-		//textToTypeGORGOLOZ.cameras = [camOther];
+		textToTypeGORGOLOZ.cameras = [camOther];
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
@@ -1232,8 +1227,6 @@ class PlayState extends MusicBeatState
 		timeBarBG.cameras = [camHUD];
 		timeTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		songCard.cameras = [camHUD];
-		creditsCard.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -2467,6 +2460,8 @@ class PlayState extends MusicBeatState
 	private function generateSong(dataPath:String):Void
 	{
 		cantPress = false;
+		wonType = false;
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 
 		// FlxG.log.add(ChartParser.parse());
 		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype','multiplicative');
@@ -4117,7 +4112,7 @@ class PlayState extends MusicBeatState
 				if(FlxTransitionableState.skipNextTransIn) {
 					CustomFadeTransition.nextCamera = null;
 				}
-				MusicBeatState.switchState(new FreeplayState());
+				MusicBeatState.switchState(new MainMenuState());
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 				changedDifficulty = false;
 			}
@@ -4990,17 +4985,23 @@ class PlayState extends MusicBeatState
 			FlxTween.tween(halloweenWhite, {alpha: 0}, 0.25, {startDelay: 0.15});
 		}
 	}
-
-	/*function typer()
+	
+	function correctLetter()
 		{
-			textToTypeGORGOLOZ = new FlxText(0,0,0, "", 32);
-			textToTypeGORGOLOZ.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			textToTypeGORGOLOZ.borderSize = 1.25;
-			textToTypeGORGOLOZ.screenCenter(XY);
-			add(textToTypeGORGOLOZ);
-
-
-		}*/
+			curPos++;
+			if (curPos >= curWord.length)
+				{
+					FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+					cantPress = false;
+					canReset = true;
+					canPause = true;
+					wonType = false;
+					curPos = 0;
+					FlxTween.tween(vignette, {alpha: 0}, 0.25);
+					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 0}, 0.25);
+					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 0}, 0.25);
+				}
+		}
 
 	private function onKeyDown(e:KeyboardEvent):Void
 		{
@@ -5013,28 +5014,44 @@ class PlayState extends MusicBeatState
 	
 				var daKey:String = String.fromCharCode(e.charCode);
 				trace(daKey);
+
+				if (curWord.charAt(curPos).toUpperCase() == daKey.toUpperCase())
+					correctLetter();
 			}
 		}
 
 	function typingtime():Void
 		{
-			#if debug
-            canPause = true;
-            canReset = true;
-            #else
-            canPause = false;
-            canReset = false;
-            #end
-			cantPress = true; //when cantpress is true you cnat press, when its false you can
-			//FlxTween.tween(vignette, {alpha: 1}, 0.25);
-			FlxTween.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
-			notes.forEachAlive(function(daNote:Note)
-                {
-                    daNote.canBeHit=false;
-					daNote.wasGoodHit = false;
-                });
-
-			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			wonType = true;
+			if (wonType = true)
+				{
+					#if debug
+					canPause = true;
+					canReset = false;
+					#else
+					canPause = false;
+					canReset = false;
+					#end
+					cantPress = true; //when cantpress is true you cant press, when its false you can
+					
+					FlxTween.tween(vignette, {alpha: 1}, 0.25);
+					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
+					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 1}, 0.25);
+		
+					notes.forEachAlive(function(daNote:Note)
+						{
+							daNote.canBeHit=false;
+							daNote.wasGoodHit = false;
+						});
+		
+					curWord = words[Math.floor(Math.random() * words.length)];
+		
+					trace(curWord);
+		
+					timebeforeGORGOLOZ.text = Std.string(curWord);
+		
+					FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+				}
 		}
 
 	function killHenchmen():Void
@@ -5152,6 +5169,7 @@ class PlayState extends MusicBeatState
 			{
 				timeToType--;
 				timebeforeGORGOLOZ.text = Std.string(timeToType);
+				textToTypeGORGOLOZ.text = Std.string(curWord);
 				//trace(timeToType);
 			}
 
@@ -5183,15 +5201,6 @@ class PlayState extends MusicBeatState
 		{
 			dad.dance();
 		}
-		if (SONG.song.toLowerCase() != 'self-portrait' ? curBeat == 1 : curBeat == 122) {
-			FlxTween.tween(songCard, {x: 40}, 1, {ease: FlxEase.quadOut});
-			FlxTween.tween(songCredits, {x: 50}, 1, {ease: FlxEase.quadOut});
-		}
-
-		if (SONG.song.toLowerCase() != 'self-portrait' ? curBeat == 8 : curBeat == 134) { 
-			FlxTween.tween(songCard, {x: 0}, 1, {ease: FlxEase.quadIn});
-			FlxTween.tween(songCredits, {x: 0}, 1, {ease: FlxEase.quadIn});
-
 		switch (curStage)
 		{
 			case 'tank':

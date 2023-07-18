@@ -20,6 +20,7 @@ import lime.app.Application;
 import Achievements;
 import editors.MasterEditorMenu;
 import flixel.input.keyboard.FlxKey;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -33,12 +34,8 @@ class MainMenuState extends MusicBeatState
 	private var camAchievement:FlxCamera;
 	
 	var optionShit:Array<String> = [
-		'story_mode',
 		'freeplay',
-		#if MODS_ALLOWED 'mods', #end
-		#if ACHIEVEMENTS_ALLOWED 'awards', #end
 		'credits',
-		#if !switch 'donate', #end
 		'options'
 	];
 
@@ -238,7 +235,13 @@ class MainMenuState extends MusicBeatState
 									case 'story_mode':
 										MusicBeatState.switchState(new StoryMenuState());
 									case 'freeplay':
-										MusicBeatState.switchState(new FreeplayState());
+										PlayState.SONG = Song.loadFromJson('him', 'him');
+										PlayState.isStoryMode = false;
+										PlayState.storyDifficulty = 2;
+										new FlxTimer().start(0.07, function(tmr:FlxTimer)
+											{
+												LoadingState.loadAndSwitchState(new PlayState()); 
+											});
 									#if MODS_ALLOWED
 									case 'mods':
 										MusicBeatState.switchState(new ModsMenuState());
