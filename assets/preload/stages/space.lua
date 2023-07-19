@@ -48,5 +48,8 @@ function onCreatePost()
     noteTweenX("NoteMove6", 5, 212, 0.01, cubeIn) -- player down
     noteTweenX("NoteMove7", 7, 434, 0.01, cubeIn) -- player right
     noteTweenX("NoteMove8", 6, 324, 0.01, cubeIn) -- player up
-end
 
+    setProperty('timeBar.color', getColorFromHex('458b94'))
+    setProperty('scoreTxt.color', getColorFromHex('458b94'))
+    
+    end
