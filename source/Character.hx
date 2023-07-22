@@ -33,6 +33,7 @@ typedef CharacterFile = {
 	var flip_x:Bool;
 	var no_antialiasing:Bool;
 	var healthbar_colors:Array<Int>;
+	var cammove:Null<Float>;
 }
 
 typedef AnimArray = {
@@ -70,6 +71,8 @@ class Character extends FlxSprite
 	public var cameraPosition:Array<Float> = [0, 0];
 
 	public var hasMissAnimations:Bool = false;
+
+	public var NoteCamMove:Float = 35;
 
 	//Used on Character Editor
 	public var imageFile:String = '';
@@ -183,6 +186,10 @@ class Character extends FlxSprite
 				if(json.no_antialiasing) {
 					antialiasing = false;
 					noAntialiasing = true;
+				}
+
+				if(json.cammove != null) {
+					NoteCamMove = json.cammove;
 				}
 
 				if(json.healthbar_colors != null && json.healthbar_colors.length > 2)
@@ -302,6 +309,10 @@ class Character extends FlxSprite
 				{
 					dance();
 					holdTimer = 0;
+					var beef = Std.isOfType(this, Boyfriend);
+					if (ClientPrefs.NoteCamMove && beef == PlayState.instance.camOnBf) {
+						PlayState.instance.moveCamera(!beef, true);
+					}
 				}
 			}
 

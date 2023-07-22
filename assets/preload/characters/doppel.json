@@ -1,114 +1,114 @@
 {
 	"animations": [
 		{
-			"loop": false,
 			"offsets": [
 				0,
 				0
 			],
-			"anim": "idle",
+			"loop": false,
 			"fps": 24,
-			"name": "DoppleIdle",
-			"indices": []
+			"anim": "idle",
+			"indices": [],
+			"name": "DoppleIdle"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				34,
 				70
 			],
+			"loop": false,
+			"fps": 24,
 			"anim": "singUP",
-			"fps": 24,
-			"name": "Doppleup",
-			"indices": []
+			"indices": [],
+			"name": "Doppleup"
 		},
 		{
-			"loop": false,
-			"offsets": [
-				-90,
-				-3
-			],
-			"anim": "singRIGHT",
-			"fps": 24,
-			"name": "Doppleup",
-			"indices": []
-		},
-		{
-			"loop": false,
 			"offsets": [
 				111,
 				20
 			],
-			"anim": "singLEFT",
+			"loop": false,
 			"fps": 24,
-			"name": "Doppleleft",
-			"indices": []
+			"anim": "singLEFT",
+			"indices": [],
+			"name": "Doppleleft"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				10,
 				-70
 			],
-			"anim": "singDOWN",
+			"loop": false,
 			"fps": 24,
-			"name": "Doppledown",
-			"indices": []
+			"anim": "singDOWN",
+			"indices": [],
+			"name": "Doppledown"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				20,
 				0
 			],
-			"anim": "attack",
+			"loop": false,
 			"fps": 24,
-			"name": "Doppleattack",
-			"indices": []
+			"anim": "attack",
+			"indices": [],
+			"name": "Doppleattack"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				0,
 				0
 			],
-			"anim": "ded",
+			"loop": false,
 			"fps": 24,
-			"name": "Dopplecrash",
-			"indices": []
+			"anim": "ded",
+			"indices": [],
+			"name": "Dopplecrash"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				1682,
 				238
 			],
-			"anim": "doppleKILLSYOU",
+			"loop": false,
 			"fps": 24,
-			"name": "Doppledeathscreen",
-			"indices": []
+			"anim": "doppleKILLSYOU",
+			"indices": [],
+			"name": "Doppledeathscreen"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				147,
 				29
 			],
-			"anim": "intro",
+			"loop": false,
 			"fps": 24,
-			"name": "Doppleintro",
-			"indices": []
+			"anim": "intro",
+			"indices": [],
+			"name": "Doppleintro"
 		},
 		{
-			"loop": false,
 			"offsets": [
 				100,
 				110
 			],
-			"anim": "ouch",
+			"loop": false,
 			"fps": 24,
-			"name": "Dopplehit",
-			"indices": []
+			"anim": "ouch",
+			"indices": [],
+			"name": "Dopplehit"
+		},
+		{
+			"offsets": [
+				-90,
+				-3
+			],
+			"indices": [],
+			"fps": 24,
+			"anim": "singRIGHT",
+			"loop": false,
+			"name": "Doppleright"
 		}
 	],
 	"no_antialiasing": false,
@@ -125,8 +125,8 @@
 		148
 	],
 	"camera_position": [
-		-500,
-		-50
+		-300,
+		-20
 	],
 	"sing_duration": 6.1,
 	"scale": 1

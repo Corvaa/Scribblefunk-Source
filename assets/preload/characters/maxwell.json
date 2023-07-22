@@ -1,103 +1,136 @@
 {
 	"animations": [
 		{
+			"loop": false,
 			"offsets": [
 				140,
 				40
 			],
-			"loop": false,
-			"fps": 24,
 			"anim": "idle",
-			"indices": [],
-			"name": "MaxwellIdle"
+			"fps": 24,
+			"name": "MaxwellIdle",
+			"indices": []
 		},
 		{
+			"loop": false,
 			"offsets": [
 				220,
 				40
 			],
-			"loop": false,
-			"fps": 24,
 			"anim": "singLEFT",
-			"indices": [],
-			"name": "singLEFT"
+			"fps": 24,
+			"name": "singLEFT",
+			"indices": []
 		},
 		{
+			"loop": false,
 			"offsets": [
 				220,
 				70
 			],
-			"loop": false,
-			"fps": 24,
 			"anim": "singLEFTmiss",
+			"fps": 24,
+			"name": "missLEFT",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				110,
+				-20
+			],
+			"anim": "singDOWN",
+			"fps": 24,
+			"name": "singDOWN",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				110,
+				140
+			],
+			"anim": "singUP",
+			"fps": 24,
+			"name": "singUP",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				30,
+				40
+			],
+			"anim": "singRIGHT",
+			"fps": 24,
+			"name": "singRIGHT",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				30,
+				40
+			],
+			"anim": "singRIGHTmiss",
+			"fps": 24,
+			"name": "missRIGHT",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				110,
+				30
+			],
+			"anim": "singDOWNmiss",
+			"fps": 24,
+			"name": "missDOWN",
+			"indices": []
+		},
+		{
+			"loop": false,
+			"offsets": [
+				110,
+				150
+			],
+			"anim": "singUPmiss",
+			"fps": 24,
+			"name": "missUP",
+			"indices": []
+		},
+		{
+			"offsets": [
+				548,
+				170
+			],
 			"indices": [],
-			"name": "missLEFT"
+			"fps": 24,
+			"anim": "dodge",
+			"loop": false,
+			"name": "dodge"
 		},
 		{
 			"offsets": [
 				110,
 				-20
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singDOWN",
 			"indices": [],
-			"name": "singDOWN"
+			"fps": 24,
+			"anim": "throw",
+			"loop": false,
+			"name": "throw"
 		},
 		{
 			"offsets": [
-				110,
-				140
+				200,
+				70
 			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singUP",
 			"indices": [],
-			"name": "singUP"
-		},
-		{
-			"offsets": [
-				30,
-				40
-			],
-			"loop": false,
 			"fps": 24,
-			"anim": "singRIGHT",
-			"indices": [],
-			"name": "singRIGHT"
-		},
-		{
-			"offsets": [
-				30,
-				40
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singRIGHTmiss",
-			"indices": [],
-			"name": "missRIGHT"
-		},
-		{
-			"offsets": [
-				110,
-				30
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singDOWNmiss",
-			"indices": [],
-			"name": "missDOWN"
-		},
-		{
-			"offsets": [
-				110,
-				150
-			],
-			"loop": false,
-			"fps": 24,
-			"anim": "singUPmiss",
-			"indices": [],
-			"name": "missUP"
+			"anim": "write",
+			"loop": true,
+			"name": "write"
 		}
 	],
 	"no_antialiasing": false,

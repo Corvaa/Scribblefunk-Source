@@ -21,6 +21,8 @@ class ClientPrefs {
 	public static var violence:Bool = true;
 	public static var camZooms:Bool = true;
 	public static var hideHud:Bool = false;
+	public static var NoteCamMove:Bool = false;
+	public static var typingMechanicc:Bool = true;
 	public static var noteOffset:Int = 0;
 	public static var arrowHSV:Array<Array<Int>> = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
 	public static var ghostTapping:Bool = true;
@@ -95,6 +97,8 @@ class ClientPrefs {
 
 	public static function saveSettings() {
 		FlxG.save.data.downScroll = downScroll;
+		FlxG.save.data.NoteCamMove = NoteCamMove;
+		FlxG.save.data.typingMechanicc = typingMechanicc;
 		FlxG.save.data.middleScroll = middleScroll;
 		FlxG.save.data.opponentStrums = opponentStrums;
 		FlxG.save.data.showFPS = showFPS;
@@ -141,6 +145,12 @@ class ClientPrefs {
 	}
 
 	public static function loadPrefs() {
+		if(FlxG.save.data.NoteCamMove != null) {
+			NoteCamMove = FlxG.save.data.NoteCamMove;
+		}
+		if(FlxG.save.data.typingMechanicc != null) {
+			typingMechanicc = FlxG.save.data.typingMechanicc;
+		}
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
 		}

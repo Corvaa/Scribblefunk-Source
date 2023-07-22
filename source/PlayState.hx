@@ -327,18 +327,18 @@ class PlayState extends MusicBeatState
 
 	public var words:Array<Dynamic> =
 	[
-		'deez',
-		'caca',
-		'fuck',
-		'penos',
-		'kill yourself'
+		'Football',
+		'Microphone',
+		'Explosive Lemon',
+		'Globe',
+		'Nuclear Warhead'
 	];
 
-	public var timeToType:Float = 15;
+	public var timeToType:Float = 20;
 
 	var vignette:BGSprite;
 
-	public var timebeforeGORGOLOZ:FlxText;
+	var timebeforeGORGOLOZ:FlxText;
 
 	public var textToTypeGORGOLOZ:FlxText;
 
@@ -348,6 +348,18 @@ class PlayState extends MusicBeatState
 	var word:String = '';
 
 	var wonType:Bool = false;
+
+	var book:FlxSprite;
+	var inputBar:FlxSprite;
+
+	//camera movement
+	public var camOnBf:Bool = true;
+	public var curCamPosX:Float = 0;
+	public var curCamPosY:Float = 0;
+
+	//copied from vs brick shhhhhhhh
+	var canDodge:Bool = false;
+	var dodging:Bool = false;
 
 	override public function create()
 	{
@@ -1153,8 +1165,7 @@ class PlayState extends MusicBeatState
 		healthBarBG.yAdd = -4;
 		add(healthBarBG);
 		if(ClientPrefs.downScroll) healthBarBG.y = 0.11 * FlxG.height;
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, LEFT_TO_RIGHT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		// healthBar
@@ -1195,18 +1206,28 @@ class PlayState extends MusicBeatState
 			botplayTxt.y = timeBarBG.y - 78;
 		}
 
+		book = new FlxSprite().loadGraphic(Paths.image('ui/book'));
+		book.screenCenter(XY);
+		add(book);
+
+		inputBar = new FlxSprite().loadGraphic(Paths.image('ui/input'));
+		inputBar.screenCenter(XY);
+		inputBar.scale.set(0.6,0.6);
+		inputBar.alpha = 0;
+		add(inputBar);
+
 		timebeforeGORGOLOZ = new FlxText(0,0,0, Std.string(timeToType), 32);
-		timebeforeGORGOLOZ.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		timebeforeGORGOLOZ.setFormat(Paths.font("man_monster_ahh.otf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		timebeforeGORGOLOZ.borderSize = 1.25;
 		timebeforeGORGOLOZ.screenCenter(XY);
-		timebeforeGORGOLOZ.y -= 25;
+		timebeforeGORGOLOZ.y -= 200;
 		timebeforeGORGOLOZ.alpha = 0;
 		add(timebeforeGORGOLOZ);
 
-		textToTypeGORGOLOZ = new FlxText(0,0,0, Std.string(curWord), 32);
-		textToTypeGORGOLOZ.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		textToTypeGORGOLOZ = new FlxText(0,0,0, Std.string(curWord), 48);
+		textToTypeGORGOLOZ.setFormat(Paths.font("man_monster_ahh.otf"), 32, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		textToTypeGORGOLOZ.borderSize = 1.25;
-		textToTypeGORGOLOZ.screenCenter(XY);
+		textToTypeGORGOLOZ.setPosition(555,240);
 		textToTypeGORGOLOZ.alpha = 0;
 		add(textToTypeGORGOLOZ);
 
@@ -1214,6 +1235,8 @@ class PlayState extends MusicBeatState
 		timebeforeGORGOLOZ.cameras = [camOther];
 		textToTypeGORGOLOZ.cameras = [camOther];
 
+		book.cameras = [camHUD];
+		inputBar.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -1423,6 +1446,8 @@ class PlayState extends MusicBeatState
 		callOnLuas('onCreatePost', []);
 
 		super.create();
+
+		canDodge = true;
 
 		cacheCountdown();
 		cachePopUpScore();
@@ -2462,6 +2487,7 @@ class PlayState extends MusicBeatState
 		cantPress = false;
 		wonType = false;
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+		timeToType = 20;
 
 		// FlxG.log.add(ChartParser.parse());
 		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype','multiplicative');
@@ -2934,10 +2960,27 @@ class PlayState extends MusicBeatState
 		}*/
 
 		callOnLuas('onUpdate', [elapsed]);
+		switch(curWord){
+			case 'Explosive Lemon':
+				textToTypeGORGOLOZ.x=510;
+			case 'Microphone':
+				textToTypeGORGOLOZ.x=547;
+			case 'Nuclear Warhead':
+				textToTypeGORGOLOZ.x=517;
+			case 'Football':
+				textToTypeGORGOLOZ.x=572;
+			case 'Globe':
+				textToTypeGORGOLOZ.x=597;
+		}
+		/*'Football',
+		'Microphone',
+		'Explosive Lemon',
+		'Globe',
+		'Nuclear Warhead'*/
 
 		if(timeToType == 0)
 			{
-				health -= 80085; //boobs
+				health -= 80085; //tits*
 			}
 
 		switch (curStage)
@@ -3106,6 +3149,27 @@ class PlayState extends MusicBeatState
 			openChartEditor();
 		}
 
+		if (curSong.toLowerCase() == 'self-portrait')
+			{
+				if(FlxG.keys.justPressed.SPACE && !dodging && canDodge)
+				{
+					dodging = true;
+					boyfriend.playAnim('dodge');
+					boyfriend.holdTimer = 0.7;
+	
+					new FlxTimer().start(0.7, function(tmr:FlxTimer)
+					{
+						dodging = false;
+						boyfriend.dance();
+					});
+	
+					new FlxTimer().start(1, function(tmr:FlxTimer)
+						{
+							canDodge = true;
+						});
+				}
+			}
+
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
@@ -3119,8 +3183,8 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = -90 + healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
-		iconP2.x = 120 + healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) + (150 * iconP1.scale.x - 150) / 2 - iconOffset;
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (150 * iconP2.scale.x) / 2 - iconOffset * 2;
 
 		if (health > 2)
 			health = 2;
@@ -3885,6 +3949,8 @@ class PlayState extends MusicBeatState
 			return;
 		}
 
+		var oldMove = camOnBf;
+
 		if (!SONG.notes[curSection].mustHitSection)
 		{
 			moveCamera(true);
@@ -3898,29 +3964,24 @@ class PlayState extends MusicBeatState
 	}
 
 	var cameraTwn:FlxTween;
-	public function moveCamera(isDad:Bool)
+	public function moveCamera(isDad:Bool, ?repeater:Bool = false)
 	{
+		if ((camOnBf == !isDad) != repeater) {
+			return;
+		}
+		camOnBf=!isDad;
 		if(isDad)
 		{
 			camFollow.set(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 			camFollow.x += dad.cameraPosition[0] + opponentCameraOffset[0];
 			camFollow.y += dad.cameraPosition[1] + opponentCameraOffset[1];
 			tweenCamIn();
-			if(dad.curCharacter == "bf")
-				{
-					defaultCamZoom = 0.75;
-				}
 		}
 		else
 		{
 			camFollow.set(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
 			camFollow.x -= boyfriend.cameraPosition[0] - boyfriendCameraOffset[0];
 			camFollow.y += boyfriend.cameraPosition[1] + boyfriendCameraOffset[1];
-
-			if(boyfriend.curCharacter == "maxwell")
-				{
-					defaultCamZoom = 0.65;
-				}
 
 			if (Paths.formatToSongPath(SONG.song) == 'tutorial' && cameraTwn == null && FlxG.camera.zoom != 1)
 			{
@@ -3932,6 +3993,8 @@ class PlayState extends MusicBeatState
 				});
 			}
 		}
+		curCamPosX = camFollow.x;
+		curCamPosY = camFollow.y;
 	}
 
 	function tweenCamIn() {
@@ -4676,6 +4739,20 @@ class PlayState extends MusicBeatState
 		if (Paths.formatToSongPath(SONG.song) != 'tutorial')
 			camZooming = true;
 
+		if (!camOnBf && ClientPrefs.NoteCamMove) {
+			switch(note.noteData) {
+				case 0:
+					camFollow.set(curCamPosX - dad.NoteCamMove, curCamPosY);
+				case 1:
+					camFollow.set(curCamPosX, curCamPosY + dad.NoteCamMove);
+				case 2:
+					camFollow.set(curCamPosX, curCamPosY - dad.NoteCamMove);
+				case 3:
+					camFollow.set(curCamPosX + dad.NoteCamMove, curCamPosY);
+				default:
+			}
+		}
+
 		if(note.noteType == 'Hey!' && dad.animOffsets.exists('hey')) {
 			dad.playAnim('hey', true);
 			dad.specialAnim = true;
@@ -4729,6 +4806,21 @@ class PlayState extends MusicBeatState
 		{
 			if(cpuControlled && (note.ignoreNote || note.hitCausesMiss)) return;
 
+			if (camOnBf && ClientPrefs.NoteCamMove) {
+				switch(note.noteData) {
+					case 0:
+						camFollow.set(curCamPosX - boyfriend.NoteCamMove, curCamPosY);
+					case 1:
+						camFollow.set(curCamPosX, curCamPosY + boyfriend.NoteCamMove);
+					case 2:
+						camFollow.set(curCamPosX, curCamPosY - boyfriend.NoteCamMove);
+					case 3:
+						camFollow.set(curCamPosX + boyfriend.NoteCamMove, curCamPosY);
+					default:
+						//trace("noob");
+				}
+			}
+			
 			if (ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled)
 			{
 				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
@@ -4985,6 +5077,64 @@ class PlayState extends MusicBeatState
 			FlxTween.tween(halloweenWhite, {alpha: 0}, 0.25, {startDelay: 0.15});
 		}
 	}
+
+	function dodge(canDodge:Bool = false)
+		{
+			warn();
+			new FlxTimer().start(0.6, function(tmr:FlxTimer)
+			{
+				if (!dodging)
+					{
+						// dad.playAnim('shoot');
+						if(dad.animation.getByName('shoot') != null) {
+							dad.playAnim('shoot', true);
+							dad.specialAnim = true;
+						}
+						health -= 10; //rip bozo
+						trace("big rip lmao");
+					}
+				else
+					{
+						// dad.playAnim('shoot');
+						if(dad.animation.getByName('shoot') != null) {
+							dad.playAnim('shoot', true);
+							dad.specialAnim = true;
+						}
+						FlxG.sound.play(Paths.sound('himMiss'));
+						health + 0.1;
+						trace("big W, good job fucker!!");
+					}
+			});
+		}
+
+	/*function warn() please make this work like actually work n stuff ty
+		{
+			uhmmdodgewarningithink.alpha = 1;
+			warningflash.alpha = 1;
+			// dad.playAnim('preshoot', true);
+			if(dad.animation.getByName('preshoot') != null) {
+				dad.playAnim('preshoot', true);
+				dad.specialAnim = true;
+			}
+			if (dad.curCharacter == 'him')
+				{
+					dad.holdTimer = 5;
+				}
+		
+			FlxTween.tween(warningflash, {alpha: 0}, 0.15);
+		
+			new FlxTimer().start(0.35, function(tmr:FlxTimer)
+				{
+					warningflash.alpha = 1;
+					FlxG.sound.play(Paths.sound('tick2'));
+					FlxTween.tween(warningflash, {alpha: 0}, 0.15);
+				});
+		
+			new FlxTimer().start(0.6, function(tmr:FlxTimer)
+			{
+				uhmmdodgewarningithink.alpha = 0;
+			});
+		}*/
 	
 	function correctLetter()
 		{
@@ -4997,9 +5147,12 @@ class PlayState extends MusicBeatState
 					canPause = true;
 					wonType = false;
 					curPos = 0;
+					timeToType = 20;
 					FlxTween.tween(vignette, {alpha: 0}, 0.25);
 					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 0}, 0.25);
 					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 0}, 0.25);
+					FlxTween.tween(inputBar, {alpha: 0}, 0.25);
+					boyfriend.playAnim('idle', false);
 				}
 		}
 
@@ -5023,7 +5176,7 @@ class PlayState extends MusicBeatState
 	function typingtime():Void
 		{
 			wonType = true;
-			if (wonType = true)
+			if (wonType = true && ClientPrefs.typingMechanicc)
 				{
 					#if debug
 					canPause = true;
@@ -5033,10 +5186,16 @@ class PlayState extends MusicBeatState
 					canReset = false;
 					#end
 					cantPress = true; //when cantpress is true you cant press, when its false you can
+
+					if(boyfriend.animation.getByName('write') != null) {
+						boyfriend.playAnim('write', true);
+						boyfriend.specialAnim = true;
+					}
 					
 					FlxTween.tween(vignette, {alpha: 1}, 0.25);
 					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
 					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 1}, 0.25);
+					FlxTween.tween(inputBar, {alpha: 1}, 0.25);
 		
 					notes.forEachAlive(function(daNote:Note)
 						{
@@ -5047,8 +5206,6 @@ class PlayState extends MusicBeatState
 					curWord = words[Math.floor(Math.random() * words.length)];
 		
 					trace(curWord);
-		
-					timebeforeGORGOLOZ.text = Std.string(curWord);
 		
 					FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				}
