@@ -72,7 +72,9 @@ import sys.io.File;
 #end
 
 #if VIDEOS_ALLOWED
-import vlc.MP4Handler;
+#if (hxCodec >= "2.6.1") import hxcodec.VideoHandler as MP4Handler;
+#elseif (hxCodec == "2.6.0") import VideoHandler as MP4Handler;
+#else import vlc.MP4Handler; #end
 #end
 
 using StringTools;
@@ -325,7 +327,7 @@ class PlayState extends MusicBeatState
 	// stores the last combo score objects in an array
 	public static var lastScore:Array<FlxSprite> = [];
 
-	public var words:Array<Dynamic> =
+	public var words:Array<String> = 
 	[
 		'Football',
 		'Microphone',
@@ -360,7 +362,7 @@ class PlayState extends MusicBeatState
 	//copied from vs brick shhhhhhhh
 	var canDodge:Bool = false;
 	var dodging:Bool = false;
-
+	var thewordsidk:FlxText;
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -1211,8 +1213,9 @@ class PlayState extends MusicBeatState
 		add(book);
 
 		inputBar = new FlxSprite().loadGraphic(Paths.image('ui/input'));
-		inputBar.screenCenter(XY);
 		inputBar.scale.set(0.6,0.6);
+		inputBar.updateHitbox(); //update it mf
+		inputBar.screenCenter();
 		inputBar.alpha = 0;
 		add(inputBar);
 
@@ -1224,12 +1227,23 @@ class PlayState extends MusicBeatState
 		timebeforeGORGOLOZ.alpha = 0;
 		add(timebeforeGORGOLOZ);
 
-		textToTypeGORGOLOZ = new FlxText(0,0,0, Std.string(curWord), 48);
-		textToTypeGORGOLOZ.setFormat(Paths.font("man_monster_ahh.otf"), 32, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		textToTypeGORGOLOZ = new FlxText(0,0,FlxG.width, Std.string(curWord), 48); //define a field width and center alignment and it will autocenter the words.
+		textToTypeGORGOLOZ.setFormat(Paths.font("man_monster_ahh.otf"), 32, FlxColor.WHITE,CENTER ,FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		textToTypeGORGOLOZ.borderSize = 1.25;
-		textToTypeGORGOLOZ.setPosition(555,240);
+		//textToTypeGORGOLOZ.setPosition(555,240);
+		textToTypeGORGOLOZ.y = 240;
 		textToTypeGORGOLOZ.alpha = 0;
 		add(textToTypeGORGOLOZ);
+
+
+		thewordsidk = new FlxText(0,0,FlxG.width, '', 32);
+		thewordsidk.setFormat(Paths.font("man_monster_ahh.otf"), 32, 0xFFA86100, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		thewordsidk.borderSize = 1.25;
+		//thewordsidk.alpha = 0;
+		//thewordsidk.setPosition(inputBar.x + 25, inputBar.y + 170); //?
+		thewordsidk.y = inputBar.y + 170;
+		add(thewordsidk);
+		thewordsidk.cameras = [camOther];
 
 		vignette.cameras = [camOther];
 		timebeforeGORGOLOZ.cameras = [camOther];
@@ -1444,6 +1458,10 @@ class PlayState extends MusicBeatState
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
 		callOnLuas('onCreatePost', []);
+
+		var bfcamX = (boyfriend.getMidpoint().x - 100) - (boyfriend.cameraPosition[0] - boyfriendCameraOffset[0]);
+		var bfcamY = (boyfriend.getMidpoint().y - 100) + (boyfriend.cameraPosition[1] + boyfriendCameraOffset[1]);
+		snapCamFollowToPos(bfcamX, bfcamY); //quite shrimple really
 
 		super.create();
 
@@ -2960,18 +2978,18 @@ class PlayState extends MusicBeatState
 		}*/
 
 		callOnLuas('onUpdate', [elapsed]);
-		switch(curWord){
-			case 'Explosive Lemon':
-				textToTypeGORGOLOZ.x=510;
-			case 'Microphone':
-				textToTypeGORGOLOZ.x=547;
-			case 'Nuclear Warhead':
-				textToTypeGORGOLOZ.x=517;
-			case 'Football':
-				textToTypeGORGOLOZ.x=572;
-			case 'Globe':
-				textToTypeGORGOLOZ.x=597;
-		}
+		// switch(curWord){
+		// 	case 'Explosive Lemon':
+		// 		textToTypeGORGOLOZ.x=510;
+		// 	case 'Microphone':
+		// 		textToTypeGORGOLOZ.x=547;
+		// 	case 'Nuclear Warhead':
+		// 		textToTypeGORGOLOZ.x=517;
+		// 	case 'Football':
+		// 		textToTypeGORGOLOZ.x=572;
+		// 	case 'Globe':
+		// 		textToTypeGORGOLOZ.x=597;
+		// }
 		/*'Football',
 		'Microphone',
 		'Explosive Lemon',
@@ -4861,7 +4879,7 @@ class PlayState extends MusicBeatState
 			}
 			health += note.hitHealth * healthGain;
 
-			if(!note.noAnimation) {
+			if(!note.noAnimation) { //stupid as hell but whatever.
 				var animToPlay:String = singAnimations[Std.int(Math.abs(note.noteData))];
 
 				if(note.gfNote)
@@ -5080,7 +5098,7 @@ class PlayState extends MusicBeatState
 
 	function dodge(canDodge:Bool = false)
 		{
-			warn();
+			//warn();
 			new FlxTimer().start(0.6, function(tmr:FlxTimer)
 			{
 				if (!dodging)
@@ -5152,7 +5170,31 @@ class PlayState extends MusicBeatState
 					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 0}, 0.25);
 					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 0}, 0.25);
 					FlxTween.tween(inputBar, {alpha: 0}, 0.25);
-					boyfriend.playAnim('idle', false);
+					FlxTween.tween(thewordsidk, {alpha: 0}, 0.25); //make it a grp so u can just make all tween together
+					
+					boyfriend.playAnim('throw', true);
+					boyfriend.specialAnim = true;
+					new FlxTimer().start(0.5, function (t:FlxTimer) { //im using a timer because callbacks arent playing too kind
+						notes.forEachAlive(function(daNote:Note)
+						{
+							if (!daNote.mustPress) daNote.noAnimation = true;
+							else daNote.noAnimation = false;
+						});
+						dad.specialAnim = true;
+						dad.playAnim('ouch',true);
+						new FlxTimer().start(1, function (t:FlxTimer) { //this is stupid as hell but i really do not care
+							notes.forEachAlive(function(daNote:Note)
+							{
+								if (!daNote.mustPress) daNote.noAnimation = false;
+							});
+						});
+						
+					});
+					new FlxTimer().start(0.25, function (t:FlxTimer) {
+						thewordsidk.text = '';
+					});
+					
+
 				}
 		}
 
@@ -5168,11 +5210,18 @@ class PlayState extends MusicBeatState
 				var daKey:String = String.fromCharCode(e.charCode);
 				trace(daKey);
 
-				if (curWord.charAt(curPos).toUpperCase() == daKey.toUpperCase())
+				if (curWord.charAt(curPos).toUpperCase() == daKey.toUpperCase()) {
+					thewordsidk.text += daKey.toUpperCase();
+					trace(thewordsidk.text);
 					correctLetter();
+				}
+
 			}
 		}
 
+
+
+		var notStartedWriting:Bool = true;
 	function typingtime():Void
 		{
 			wonType = true;
@@ -5187,6 +5236,11 @@ class PlayState extends MusicBeatState
 					#end
 					cantPress = true; //when cantpress is true you cant press, when its false you can
 
+					// if(boyfriend.animation.getByName('write') != null && notStartedWriting) {
+					// 	boyfriend.playAnim('write', true);
+					// 	boyfriend.specialAnim = true;
+					// }
+
 					if(boyfriend.animation.getByName('write') != null) {
 						boyfriend.playAnim('write', true);
 						boyfriend.specialAnim = true;
@@ -5196,16 +5250,21 @@ class PlayState extends MusicBeatState
 					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
 					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 1}, 0.25);
 					FlxTween.tween(inputBar, {alpha: 1}, 0.25);
+					FlxTween.tween(thewordsidk, {alpha: 1}, 0.25); //make it a grp so u can just make all tween together
 		
 					notes.forEachAlive(function(daNote:Note)
 						{
 							daNote.canBeHit=false;
 							daNote.wasGoodHit = false;
+							if (daNote.mustPress) daNote.noAnimation = true;
+						
 						});
 		
 					curWord = words[Math.floor(Math.random() * words.length)];
 		
 					trace(curWord);
+					timebeforeGORGOLOZ.text = Std.string(timeToType);
+					textToTypeGORGOLOZ.text = Std.string(curWord);
 		
 					FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				}
@@ -5326,7 +5385,7 @@ class PlayState extends MusicBeatState
 			{
 				timeToType--;
 				timebeforeGORGOLOZ.text = Std.string(timeToType);
-				textToTypeGORGOLOZ.text = Std.string(curWord);
+				//textToTypeGORGOLOZ.text = Std.string(curWord);
 				//trace(timeToType);
 			}
 
