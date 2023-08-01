@@ -26,30 +26,24 @@ function onCreate()
     scaleObject('satelite',2, 2)
     addLuaSprite('satelite', false)
     setProperty('sky.antialiasing', false)
-
-    makeLuaSprite('overlay', 'bgs/overlay', -200, -205)
-    setLuaSpriteScrollFactor('overlay', 1, 1)
-    scaleObject('overlay',4, 2.25)
-    addLuaSprite('overlay', true)
-    setProperty('overlay.antialiasing', true)
 end
 
 function onCreatePost()
-    setBlendMode('overlay', 'subtract')
-    doTweenAlpha('overlayalpha', 'overlay', 0.5, 0.1, 'linear')
     doTweenAngle("sateliteangle", "satelite", 360, 500, 'quadOut')
     doTweenX("ufoMove", "ufo", -400, 400, 'quadOut')
 
-    noteTweenX("NoteMove1", 0, 730, 0.01, cubeIn) --opp left
-    noteTweenX("NoteMove2", 2, 955, 0.01, cubeIn) --opp up
-    noteTweenX("NoteMove3", 1, 842, 0.01, cubeIn) --opp down
-    noteTweenX("NoteMove4", 3, 1066, 0.01, cubeIn) --opp right
-    noteTweenX("NoteMove5", 4, 100, 0.01, cubeIn) --player left
-    noteTweenX("NoteMove6", 5, 212, 0.01, cubeIn) -- player down
-    noteTweenX("NoteMove7", 7, 434, 0.01, cubeIn) -- player right
-    noteTweenX("NoteMove8", 6, 324, 0.01, cubeIn) -- player up
-
     setProperty('timeBar.color', getColorFromHex('458b94'))
     setProperty('scoreTxt.color', getColorFromHex('458b94'))
-    
+
+    if middlescroll == false then
+        noteTweenX("NoteMove1", 0, 730, 0.01, cubeIn) --opp left
+        noteTweenX("NoteMove2", 2, 955, 0.01, cubeIn) --opp up
+        noteTweenX("NoteMove3", 1, 842, 0.01, cubeIn) --opp down
+        noteTweenX("NoteMove4", 3, 1066, 0.01, cubeIn) --opp right
+        noteTweenX("NoteMove5", 4, 100, 0.01, cubeIn) --player left
+        noteTweenX("NoteMove6", 5, 212, 0.01, cubeIn) -- player down
+        noteTweenX("NoteMove7", 7, 434, 0.01, cubeIn) -- player right
+        noteTweenX("NoteMove8", 6, 324, 0.01, cubeIn) -- player up
     end
+
+end

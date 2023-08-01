@@ -1,5 +1,6 @@
 package;
 
+import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 #if desktop
 import Discord.DiscordClient;
@@ -216,6 +217,7 @@ class PlayState extends MusicBeatState
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
 	public var camHUD:FlxCamera;
+	var camExt:FlxCamera;
 	public var camGame:FlxCamera;
 	public var camOther:FlxCamera;
 	public var cameraSpeed:Float = 1;
@@ -330,10 +332,18 @@ class PlayState extends MusicBeatState
 	public var words:Array<String> = 
 	[
 		'Football',
-		'Microphone',
-		'Explosive Lemon',
 		'Globe',
-		'Nuclear Warhead'
+		'Nuclear Warhead',
+		'Explosive Lemon',
+		'Microphone'
+	];
+
+	var offsets:Map<String, Array<FlxPoint>> = [
+		"Football" => [new FlxPoint(41, 94), new FlxPoint(41, 94), new FlxPoint(34, 96), new FlxPoint(34, 96), new FlxPoint(67, 107), new FlxPoint(67, 107), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90)],
+		"Globe" => [new FlxPoint(78, 108), new FlxPoint(78, 108), new FlxPoint(85, 103), new FlxPoint(85, 103), new FlxPoint(114, 118), new FlxPoint(114, 118), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103)],
+		"Nuclear Warhead" => [new FlxPoint(-29, 5), new FlxPoint(-29, 5), new FlxPoint(-23, -5), new FlxPoint(-23, -5), new FlxPoint(16, 8), new FlxPoint(16, 8), new FlxPoint(16, 8), new FlxPoint(16, 8), new FlxPoint(16, 8), new FlxPoint(16, 8), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13), new FlxPoint(-33, -13)],
+		"Explosive Lemon" => [new FlxPoint(61, 57), new FlxPoint(61, 57), new FlxPoint(48, 60), new FlxPoint(48, 60), new FlxPoint(80, 81), new FlxPoint(80, 81), new FlxPoint(80, 81), new FlxPoint(80, 81), new FlxPoint(80, 81), new FlxPoint(80, 81), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68), new FlxPoint(20, 68)],
+		"Microphone" => [new FlxPoint(4, 120), new FlxPoint(4, 120), new FlxPoint(77, 96), new FlxPoint(77, 96), new FlxPoint(107, 114), new FlxPoint(107, 114), new FlxPoint(107, 114), new FlxPoint(107, 114), new FlxPoint(107, 114), new FlxPoint(107, 114), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95), new FlxPoint(46, 95)]
 	];
 
 	public var timeToType:Float = 20;
@@ -353,6 +363,8 @@ class PlayState extends MusicBeatState
 
 	var book:FlxSprite;
 	var inputBar:FlxSprite;
+	var popup:FlxSprite;
+	var popup2:FlxSprite;
 
 	//camera movement
 	public var camOnBf:Bool = true;
@@ -360,9 +372,13 @@ class PlayState extends MusicBeatState
 	public var curCamPosY:Float = 0;
 
 	//copied from vs brick shhhhhhhh
-	var canDodge:Bool = false;
-	var dodging:Bool = false;
+	var shouldDodge:Bool = false;
+	var warning:FlxSprite;
+	var warningSfx:FlxSound;
+	var shoot:FlxSound;
+
 	var thewordsidk:FlxText;
+	var object:FlxSprite;
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -429,14 +445,21 @@ class PlayState extends MusicBeatState
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
+		camExt = new FlxCamera();
 		camHUD = new FlxCamera();
 		camOther = new FlxCamera();
+		camExt.bgColor.alpha = 0;
 		camHUD.bgColor.alpha = 0;
 		camOther.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(camExt, false);
 		FlxG.cameras.add(camOther, false);
+
+		camHUD.alpha = 0;
+		camGame.alpha = 0;
+
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
@@ -887,8 +910,8 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
-		add(dadGroup);
 		add(boyfriendGroup);
+		add(dadGroup);
 
 		switch(curStage)
 		{
@@ -1209,10 +1232,24 @@ class PlayState extends MusicBeatState
 		}
 
 		book = new FlxSprite().loadGraphic(Paths.image('ui/book'));
+		book.antialiasing = ClientPrefs.globalAntialiasing;
 		book.screenCenter(XY);
 		add(book);
 
+		popup = new FlxSprite(0, 720);
+		popup.loadGraphic(Paths.image('ui/name'));
+		popup.antialiasing = ClientPrefs.globalAntialiasing;
+		popup.screenCenter(X);
+		add(popup);
+
+		popup2 = new FlxSprite(0, 720);
+		popup2.loadGraphic(Paths.image('ui/credit'));
+		popup2.antialiasing = ClientPrefs.globalAntialiasing;
+		popup2.screenCenter(X);
+		add(popup2);
+
 		inputBar = new FlxSprite().loadGraphic(Paths.image('ui/input'));
+		inputBar.antialiasing = ClientPrefs.globalAntialiasing;
 		inputBar.scale.set(0.6,0.6);
 		inputBar.updateHitbox(); //update it mf
 		inputBar.screenCenter();
@@ -1243,12 +1280,35 @@ class PlayState extends MusicBeatState
 		//thewordsidk.setPosition(inputBar.x + 25, inputBar.y + 170); //?
 		thewordsidk.y = inputBar.y + 170;
 		add(thewordsidk);
+
+		object = new FlxSprite(250, 250);
+		object.frames = Paths.getSparrowAtlas("throwables", "shared");
+		object.scale.set(0.9, 0.9);
+		object.updateHitbox();
+		object.animation.addByPrefix("football", "Football", 24, false);
+		object.animation.addByPrefix("globe", "Globe", 24, false);
+		object.animation.addByPrefix("explosive lemon", "Lemon", 24, false);
+		object.animation.addByPrefix("microphone", "Microphone", 24, false);
+		object.animation.addByPrefix("nuclear warhead", "Nuke", 24, false);
+		add(object);
+		object.visible = false;
+
+		warning = new FlxSprite();
+		warning.frames = Paths.getSparrowAtlas("HOLYSHIT", "shared");
+		warning.animation.addByPrefix("warn", "Symbol 1 instance 1", 24, false);
+		warning.screenCenter();
+		add(warning);
+		warning.visible = false;
+
 		thewordsidk.cameras = [camOther];
 
 		vignette.cameras = [camOther];
 		timebeforeGORGOLOZ.cameras = [camOther];
 		textToTypeGORGOLOZ.cameras = [camOther];
 
+		warning.camera = camHUD;
+		popup.camera = camExt;
+		popup2.camera = camExt;
 		book.cameras = [camHUD];
 		inputBar.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
@@ -1465,7 +1525,11 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
-		canDodge = true;
+		warningSfx = new FlxSound();
+		warningSfx.loadEmbedded(Paths.sound("tick"), false, false, function() health = -1);
+
+		shoot = new FlxSound();
+		shoot.loadEmbedded(Paths.sound("boom"), false, false);
 
 		cacheCountdown();
 		cachePopUpScore();
@@ -2192,6 +2256,7 @@ class PlayState extends MusicBeatState
 
 			generateStaticArrows(0);
 			generateStaticArrows(1);
+
 			for (i in 0...playerStrums.length) {
 				setOnLuas('defaultPlayerStrumX' + i, playerStrums.members[i].x);
 				setOnLuas('defaultPlayerStrumY' + i, playerStrums.members[i].y);
@@ -2260,71 +2325,30 @@ class PlayState extends MusicBeatState
 				switch (swagCounter)
 				{
 					case 0:
+						FlxTween.tween(popup, {y: 82}, 0.45, {ease:FlxEase.backOut});
+						FlxTween.tween(popup2, {y: 443}, 0.45, {ease:FlxEase.backOut, startDelay: 0.2});
+						
 						FlxG.sound.play(Paths.sound('intro3' + introSoundsSuffix), 0.6);
 					case 1:
-						countdownReady = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
-						countdownReady.cameras = [camHUD];
-						countdownReady.scrollFactor.set();
-						countdownReady.updateHitbox();
-
-						if (PlayState.isPixelStage)
-							countdownReady.setGraphicSize(Std.int(countdownReady.width * daPixelZoom));
-
-						countdownReady.screenCenter();
-						countdownReady.antialiasing = antialias;
-						insert(members.indexOf(notes), countdownReady);
-						FlxTween.tween(countdownReady, {/*y: countdownReady.y + 100,*/ alpha: 0}, Conductor.crochet / 1000, {
-							ease: FlxEase.cubeInOut,
-							onComplete: function(twn:FlxTween)
-							{
-								remove(countdownReady);
-								countdownReady.destroy();
-							}
-						});
+						
 						FlxG.sound.play(Paths.sound('intro2' + introSoundsSuffix), 0.6);
 					case 2:
-						countdownSet = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
-						countdownSet.cameras = [camHUD];
-						countdownSet.scrollFactor.set();
-
-						if (PlayState.isPixelStage)
-							countdownSet.setGraphicSize(Std.int(countdownSet.width * daPixelZoom));
-
-						countdownSet.screenCenter();
-						countdownSet.antialiasing = antialias;
-						insert(members.indexOf(notes), countdownSet);
-						FlxTween.tween(countdownSet, {/*y: countdownSet.y + 100,*/ alpha: 0}, Conductor.crochet / 1000, {
-							ease: FlxEase.cubeInOut,
-							onComplete: function(twn:FlxTween)
-							{
-								remove(countdownSet);
-								countdownSet.destroy();
-							}
-						});
+						
 						FlxG.sound.play(Paths.sound('intro1' + introSoundsSuffix), 0.6);
 					case 3:
-						countdownGo = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
-						countdownGo.cameras = [camHUD];
-						countdownGo.scrollFactor.set();
-
-						if (PlayState.isPixelStage)
-							countdownGo.setGraphicSize(Std.int(countdownGo.width * daPixelZoom));
-
-						countdownGo.updateHitbox();
-
-						countdownGo.screenCenter();
-						countdownGo.antialiasing = antialias;
-						insert(members.indexOf(notes), countdownGo);
-						FlxTween.tween(countdownGo, {/*y: countdownGo.y + 100,*/ alpha: 0}, Conductor.crochet / 1000, {
-							ease: FlxEase.cubeInOut,
-							onComplete: function(twn:FlxTween)
-							{
-								remove(countdownGo);
-								countdownGo.destroy();
-							}
-						});
 						FlxG.sound.play(Paths.sound('introGo' + introSoundsSuffix), 0.6);
 					case 4:
+						var hardLight = new HardLight();
+						hardLight.gradient.input = BitmapData.fromFile("assets/shared/images/bgs/gradient-fixed.png");
+						FlxG.camera.setFilters([new ShaderFilter(hardLight)]);
+
+						isCameraOnForcedPos = true;
+						boyfriend.y = 1100;
+						dad.y = 1100;
+
+						FlxTween.tween(popup, {y: 720}, 0.45, {ease:FlxEase.sineIn, startDelay: 0.2});
+						FlxTween.tween(popup2, {y: 720}, 0.45, {ease:FlxEase.sineIn});
+						FlxTween.tween(camGame, {alpha:1}, 0.45, {ease:FlxEase.sineIn});
 				}
 
 				notes.forEachAlive(function(note:Note) {
@@ -2978,23 +3002,6 @@ class PlayState extends MusicBeatState
 		}*/
 
 		callOnLuas('onUpdate', [elapsed]);
-		// switch(curWord){
-		// 	case 'Explosive Lemon':
-		// 		textToTypeGORGOLOZ.x=510;
-		// 	case 'Microphone':
-		// 		textToTypeGORGOLOZ.x=547;
-		// 	case 'Nuclear Warhead':
-		// 		textToTypeGORGOLOZ.x=517;
-		// 	case 'Football':
-		// 		textToTypeGORGOLOZ.x=572;
-		// 	case 'Globe':
-		// 		textToTypeGORGOLOZ.x=597;
-		// }
-		/*'Football',
-		'Microphone',
-		'Explosive Lemon',
-		'Globe',
-		'Nuclear Warhead'*/
 
 		if(timeToType == 0)
 			{
@@ -3146,6 +3153,11 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
+		if (shouldDodge)
+			dodgeState();
+
+		adjustObject();
+
 		setOnLuas('curDecStep', curDecStep);
 		setOnLuas('curDecBeat', curDecBeat);
 
@@ -3166,27 +3178,6 @@ class PlayState extends MusicBeatState
 		{
 			openChartEditor();
 		}
-
-		if (curSong.toLowerCase() == 'self-portrait')
-			{
-				if(FlxG.keys.justPressed.SPACE && !dodging && canDodge)
-				{
-					dodging = true;
-					boyfriend.playAnim('dodge');
-					boyfriend.holdTimer = 0.7;
-	
-					new FlxTimer().start(0.7, function(tmr:FlxTimer)
-					{
-						dodging = false;
-						boyfriend.dance();
-					});
-	
-					new FlxTimer().start(1, function(tmr:FlxTimer)
-						{
-							canDodge = true;
-						});
-				}
-			}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
@@ -3743,7 +3734,23 @@ class PlayState extends MusicBeatState
 						phillyGlowGradient.bop();
 				}
 
+			case 'Dodge':
+				warningSfx.play(true);
+				warning.visible = true;
+				warning.animation.play("warn", true);
+
+				notes.forEachAlive(function(daNote:Note)
+				{
+					if (!daNote.mustPress) daNote.noAnimation = true;
+				});
+
+				dad.playAnim("attack", true);
+				dad.specialAnim = true;
+				dad.skipDance = true;
+
+				shouldDodge = true;
 			case 'Typing Mechanic':
+				FlxG.sound.play(Paths.sound("notebook"));
 				typingtime();
 
 			case 'Kill Henchmen':
@@ -5096,64 +5103,41 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function dodge(canDodge:Bool = false)
+	function dodgeState()
+	{
+		if (FlxG.keys.justPressed.SPACE) 
 		{
-			//warn();
-			new FlxTimer().start(0.6, function(tmr:FlxTimer)
+			notes.forEachAlive(function(daNote:Note)
 			{
-				if (!dodging)
-					{
-						// dad.playAnim('shoot');
-						if(dad.animation.getByName('shoot') != null) {
-							dad.playAnim('shoot', true);
-							dad.specialAnim = true;
-						}
-						health -= 10; //rip bozo
-						trace("big rip lmao");
-					}
-				else
-					{
-						// dad.playAnim('shoot');
-						if(dad.animation.getByName('shoot') != null) {
-							dad.playAnim('shoot', true);
-							dad.specialAnim = true;
-						}
-						FlxG.sound.play(Paths.sound('himMiss'));
-						health + 0.1;
-						trace("big W, good job fucker!!");
-					}
+				daNote.noAnimation = true;
 			});
-		}
+				
+			boyfriend.playAnim("dodge", true);
+			boyfriend.specialAnim = true;
 
-	/*function warn() please make this work like actually work n stuff ty
-		{
-			uhmmdodgewarningithink.alpha = 1;
-			warningflash.alpha = 1;
-			// dad.playAnim('preshoot', true);
-			if(dad.animation.getByName('preshoot') != null) {
-				dad.playAnim('preshoot', true);
-				dad.specialAnim = true;
-			}
-			if (dad.curCharacter == 'him')
-				{
-					dad.holdTimer = 5;
-				}
-		
-			FlxTween.tween(warningflash, {alpha: 0}, 0.15);
-		
-			new FlxTimer().start(0.35, function(tmr:FlxTimer)
-				{
-					warningflash.alpha = 1;
-					FlxG.sound.play(Paths.sound('tick2'));
-					FlxTween.tween(warningflash, {alpha: 0}, 0.15);
-				});
-		
-			new FlxTimer().start(0.6, function(tmr:FlxTimer)
+			shouldDodge = false;
+			
+			new FlxTimer().start(0.5, function(e:FlxTimer)
 			{
-				uhmmdodgewarningithink.alpha = 0;
+				dad.skipDance = false;
+				notes.forEachAlive(function(daNote:Note)
+				{
+					daNote.noAnimation = false;
+				});
 			});
-		}*/
-	
+
+			warning.visible = false;
+			warningSfx.stop();
+			shoot.play(true);
+		}
+	}
+
+	function adjustObject() //so mad rn how the animations don't MATCH with the hands so i gotta ADJUST ALL OF THEM on diff frames UGHHH
+	{
+		if (boyfriend.animation.curAnim.name == "throw")	
+			object.setPosition(boyfriend.x - 58 + offsets[curWord][boyfriend.animation.curAnim.curFrame].x, boyfriend.y + 70 + offsets[curWord][boyfriend.animation.curAnim.curFrame].y);
+	}
+
 	function correctLetter()
 		{
 			curPos++;
@@ -5172,6 +5156,9 @@ class PlayState extends MusicBeatState
 					FlxTween.tween(inputBar, {alpha: 0}, 0.25);
 					FlxTween.tween(thewordsidk, {alpha: 0}, 0.25); //make it a grp so u can just make all tween together
 					
+					object.visible = true;
+					object.animation.play(curWord.toLowerCase(), true);
+
 					boyfriend.playAnim('throw', true);
 					boyfriend.specialAnim = true;
 					new FlxTimer().start(0.5, function (t:FlxTimer) { //im using a timer because callbacks arent playing too kind
@@ -5180,8 +5167,10 @@ class PlayState extends MusicBeatState
 							if (!daNote.mustPress) daNote.noAnimation = true;
 							else daNote.noAnimation = false;
 						});
-						dad.specialAnim = true;
+						object.visible = false;
+						FlxG.sound.play(Paths.sound("explosion"));
 						dad.playAnim('ouch',true);
+						dad.specialAnim = true;
 						new FlxTimer().start(1, function (t:FlxTimer) { //this is stupid as hell but i really do not care
 							notes.forEachAlive(function(daNote:Note)
 							{
@@ -5357,6 +5346,28 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
+		if (curStep == 8)
+		{
+			dad.y = 500;
+			dad.playAnim("intro");
+		}
+
+		if (curStep == 16 || curStep == 20 || curStep == 24 || curStep == 28)
+			FlxTween.tween(boyfriend, {y: boyfriend.y - 250}, 0.3, {ease:FlxEase.backOut});
+
+		if (curStep == 32)
+		{
+			FlxTween.tween(camHUD, {alpha:1}, 0.45, {ease:FlxEase.sineIn});
+			isCameraOnForcedPos = false;
+		}
+
+		if (curStep == 1200)
+		{
+			dad.playAnim("ded");
+			dad.skipDance = true;
+			dad.specialAnim = true;
+		}
+
 		if (Math.abs(FlxG.sound.music.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)
 			|| (SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > (20 * playbackRate)))
 		{
