@@ -332,11 +332,13 @@ class PlayState extends MusicBeatState
 	public var words:Array<String> = 
 	[
 		'Football',
-		'Globe',
-		'Nuclear Warhead',
+		'Microphone',
 		'Explosive Lemon',
-		'Microphone'
+		'Globe',
+		'Nuclear Warhead'
 	];
+
+	var order:Int = 0;
 
 	var offsets:Map<String, Array<FlxPoint>> = [
 		"Football" => [new FlxPoint(41, 94), new FlxPoint(41, 94), new FlxPoint(34, 96), new FlxPoint(34, 96), new FlxPoint(67, 107), new FlxPoint(67, 107), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90)],
@@ -371,11 +373,11 @@ class PlayState extends MusicBeatState
 	public var curCamPosX:Float = 0;
 	public var curCamPosY:Float = 0;
 
-	//copied from vs brick shhhhhhhh
+	//copied from vs brick shhhhhhhh //not anymore -quackerona
 	var shouldDodge:Bool = false;
+	var dodgeTimer:FlxTimer;
 	var warning:FlxSprite;
-	var warningSfx:FlxSound;
-	var shoot:FlxSound;
+	var timerManager:FlxTimerManager = new FlxTimerManager();
 
 	var thewordsidk:FlxText;
 	var object:FlxSprite;
@@ -898,6 +900,9 @@ class PlayState extends MusicBeatState
 		{
 			case 'stress':
 				GameOverSubstate.characterName = 'bf-holding-gf-dead';
+			case 'self-portrait':
+				GameOverSubstate.loopSoundName = 'GAME_OVER';
+				GameOverSubstate.characterName = 'death';
 		}
 
 		if(isPixelStage) {
@@ -1179,6 +1184,7 @@ class PlayState extends MusicBeatState
 		vignette.screenCenter(XY);
 		vignette.updateHitbox();
 		vignette.alpha = 0;
+		vignette.antialiasing = ClientPrefs.globalAntialiasing;
 		add(vignette);
 
 		healthBarBG = new AttachedSprite('healthBar');
@@ -1262,6 +1268,7 @@ class PlayState extends MusicBeatState
 		timebeforeGORGOLOZ.screenCenter(XY);
 		timebeforeGORGOLOZ.y -= 200;
 		timebeforeGORGOLOZ.alpha = 0;
+		timebeforeGORGOLOZ.antialiasing = ClientPrefs.globalAntialiasing;
 		add(timebeforeGORGOLOZ);
 
 		textToTypeGORGOLOZ = new FlxText(0,0,FlxG.width, Std.string(curWord), 48); //define a field width and center alignment and it will autocenter the words.
@@ -1270,6 +1277,7 @@ class PlayState extends MusicBeatState
 		//textToTypeGORGOLOZ.setPosition(555,240);
 		textToTypeGORGOLOZ.y = 240;
 		textToTypeGORGOLOZ.alpha = 0;
+		textToTypeGORGOLOZ.antialiasing = ClientPrefs.globalAntialiasing;
 		add(textToTypeGORGOLOZ);
 
 
@@ -1279,6 +1287,7 @@ class PlayState extends MusicBeatState
 		//thewordsidk.alpha = 0;
 		//thewordsidk.setPosition(inputBar.x + 25, inputBar.y + 170); //?
 		thewordsidk.y = inputBar.y + 170;
+		thewordsidk.antialiasing = ClientPrefs.globalAntialiasing;
 		add(thewordsidk);
 
 		object = new FlxSprite(250, 250);
@@ -1463,7 +1472,7 @@ class PlayState extends MusicBeatState
 					FlxG.camera.focusOn(camFollow);
 					FlxG.camera.zoom = 1.5;
 
-					new FlxTimer().start(0.8, function(tmr:FlxTimer)
+					new FlxTimer(timerManager).start(0.8, function(tmr:FlxTimer)
 					{
 						camHUD.visible = true;
 						remove(blackScreen);
@@ -1525,11 +1534,7 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
-		warningSfx = new FlxSound();
-		warningSfx.loadEmbedded(Paths.sound("tick"), false, false, function() health = -1);
-
-		shoot = new FlxSound();
-		shoot.loadEmbedded(Paths.sound("boom"), false, false);
+		dodgeTimer = new FlxTimer(timerManager);
 
 		cacheCountdown();
 		cachePopUpScore();
@@ -1867,7 +1872,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		new FlxTimer().start(0.3, function(tmr:FlxTimer)
+		new FlxTimer(timerManager).start(0.3, function(tmr:FlxTimer)
 		{
 			black.alpha -= 0.15;
 
@@ -1883,7 +1888,7 @@ class PlayState extends MusicBeatState
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;
-						new FlxTimer().start(0.3, function(swagTimer:FlxTimer)
+						new FlxTimer(timerManager).start(0.3, function(swagTimer:FlxTimer)
 						{
 							senpaiEvil.alpha += 0.15;
 							if (senpaiEvil.alpha < 1)
@@ -1903,7 +1908,7 @@ class PlayState extends MusicBeatState
 										camHUD.visible = true;
 									}, true);
 								});
-								new FlxTimer().start(3.2, function(deadTime:FlxTimer)
+								new FlxTimer(timerManager).start(3.2, function(deadTime:FlxTimer)
 								{
 									FlxG.camera.fade(FlxColor.WHITE, 1.6, false);
 								});
@@ -2287,7 +2292,7 @@ class PlayState extends MusicBeatState
 				return;
 			}
 
-			startTimer = new FlxTimer().start(Conductor.crochet / 1000 / playbackRate, function(tmr:FlxTimer)
+			startTimer = new FlxTimer(timerManager).start(Conductor.crochet / 1000 / playbackRate, function(tmr:FlxTimer)
 			{
 				if (gf != null && tmr.loopsLeft % Math.round(gfSpeed * gf.danceEveryNumBeats) == 0 && gf.animation.curAnim != null && !gf.animation.curAnim.name.startsWith("sing") && !gf.stunned)
 				{
@@ -2325,18 +2330,18 @@ class PlayState extends MusicBeatState
 				switch (swagCounter)
 				{
 					case 0:
-						FlxTween.tween(popup, {y: 82}, 0.45, {ease:FlxEase.backOut});
-						FlxTween.tween(popup2, {y: 443}, 0.45, {ease:FlxEase.backOut, startDelay: 0.2});
+						FlxTweenPlayState.tween(popup, {y: 82}, 0.45, {ease:FlxEase.backOut});
+						FlxTweenPlayState.tween(popup2, {y: 443}, 0.45, {ease:FlxEase.backOut, startDelay: 0.2});
 						
-						FlxG.sound.play(Paths.sound('intro3' + introSoundsSuffix), 0.6);
+						FlxG.sound.play(Paths.sound('level-start'), 0.6);
 					case 1:
 						
-						FlxG.sound.play(Paths.sound('intro2' + introSoundsSuffix), 0.6);
+						//FlxG.sound.play(Paths.sound('intro2' + introSoundsSuffix), 0.6);
 					case 2:
 						
-						FlxG.sound.play(Paths.sound('intro1' + introSoundsSuffix), 0.6);
+						//FlxG.sound.play(Paths.sound('intro1' + introSoundsSuffix), 0.6);
 					case 3:
-						FlxG.sound.play(Paths.sound('introGo' + introSoundsSuffix), 0.6);
+						//FlxG.sound.play(Paths.sound('introGo' + introSoundsSuffix), 0.6);
 					case 4:
 						var hardLight = new HardLight();
 						hardLight.gradient.input = BitmapData.fromFile("assets/shared/images/bgs/gradient-fixed.png");
@@ -2346,9 +2351,9 @@ class PlayState extends MusicBeatState
 						boyfriend.y = 1100;
 						dad.y = 1100;
 
-						FlxTween.tween(popup, {y: 720}, 0.45, {ease:FlxEase.sineIn, startDelay: 0.2});
-						FlxTween.tween(popup2, {y: 720}, 0.45, {ease:FlxEase.sineIn});
-						FlxTween.tween(camGame, {alpha:1}, 0.45, {ease:FlxEase.sineIn});
+						FlxTweenPlayState.tween(popup, {y: 720}, 0.45, {ease:FlxEase.sineIn, startDelay: 0.2});
+						FlxTweenPlayState.tween(popup2, {y: 720}, 0.45, {ease:FlxEase.sineIn});
+						FlxTweenPlayState.tween(camGame, {alpha:1}, 0.45, {ease:FlxEase.sineIn});
 				}
 
 				notes.forEachAlive(function(note:Note) {
@@ -2886,6 +2891,7 @@ class PlayState extends MusicBeatState
 			for (timer in modchartTimers) {
 				timer.active = false;
 			}
+			timerManager.active = false;
 		}
 
 		super.openSubState(SubState);
@@ -2922,6 +2928,7 @@ class PlayState extends MusicBeatState
 			for (timer in modchartTimers) {
 				timer.active = true;
 			}
+			timerManager.active = true;
 			paused = false;
 			callOnLuas('onResume', []);
 
@@ -3152,6 +3159,8 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		timerManager.update(elapsed);
+		FlxTweenPlayState.globalManager.update(elapsed);
 
 		if (shouldDodge)
 			dodgeState();
@@ -3581,7 +3590,7 @@ class PlayState extends MusicBeatState
 						if(val > 2) who = boyfriend;
 						//2 only targets dad
 						dadbattleLight.alpha = 0;
-						new FlxTimer().start(0.12, function(tmr:FlxTimer) {
+						new FlxTimer(timerManager).start(0.12, function(tmr:FlxTimer) {
 							dadbattleLight.alpha = 0.375;
 						});
 						dadbattleLight.setPosition(who.getGraphicMidpoint().x - dadbattleLight.width / 2, who.y + who.height - dadbattleLight.height + 50);
@@ -3735,7 +3744,6 @@ class PlayState extends MusicBeatState
 				}
 
 			case 'Dodge':
-				warningSfx.play(true);
 				warning.visible = true;
 				warning.animation.play("warn", true);
 
@@ -3748,7 +3756,14 @@ class PlayState extends MusicBeatState
 				dad.specialAnim = true;
 				dad.skipDance = true;
 
-				shouldDodge = true;
+				FlxG.sound.play(Paths.sound("tick"), 1, false, null, true, function(){
+					FlxG.sound.play(Paths.sound("boom"));
+					dodgeTimer.start(0.2, function(e:FlxTimer)
+					{
+						health = -1;
+					});
+					shouldDodge = true;
+				});
 			case 'Typing Mechanic':
 				FlxG.sound.play(Paths.sound("notebook"));
 				typingtime();
@@ -4048,7 +4063,7 @@ class PlayState extends MusicBeatState
 		if(ClientPrefs.noteOffset <= 0 || ignoreNoteOffset) {
 			finishCallback();
 		} else {
-			finishTimer = new FlxTimer().start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer) {
+			finishTimer = new FlxTimer(timerManager).start(ClientPrefs.noteOffset / 1000, function(tmr:FlxTimer) {
 				finishCallback();
 			});
 		}
@@ -4182,7 +4197,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.music.stop();
 
 					if(winterHorrorlandNext) {
-						new FlxTimer().start(1.5, function(tmr:FlxTimer) {
+						new FlxTimer(timerManager).start(1.5, function(tmr:FlxTimer) {
 							cancelMusicFadeTween();
 							LoadingState.loadAndSwitchState(new PlayState());
 						});
@@ -4746,7 +4761,7 @@ class PlayState extends MusicBeatState
 			/*boyfriend.stunned = true;
 
 			// get stunned for 1/60 of a second, makes you able to
-			new FlxTimer().start(1 / 60, function(tmr:FlxTimer)
+			new FlxTimer(timerManager).start(1 / 60, function(tmr:FlxTimer)
 			{
 				boyfriend.stunned = false;
 			});*/
@@ -5000,7 +5015,7 @@ class PlayState extends MusicBeatState
 
 		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
 		fastCarCanDrive = false;
-		carTimer = new FlxTimer().start(2, function(tmr:FlxTimer)
+		carTimer = new FlxTimer(timerManager).start(2, function(tmr:FlxTimer)
 		{
 			resetFastCar();
 			carTimer = null;
@@ -5107,6 +5122,8 @@ class PlayState extends MusicBeatState
 	{
 		if (FlxG.keys.justPressed.SPACE) 
 		{
+			dodgeTimer.cancel();
+			
 			notes.forEachAlive(function(daNote:Note)
 			{
 				daNote.noAnimation = true;
@@ -5117,7 +5134,7 @@ class PlayState extends MusicBeatState
 
 			shouldDodge = false;
 			
-			new FlxTimer().start(0.5, function(e:FlxTimer)
+			new FlxTimer(timerManager).start(0.5, function(e:FlxTimer)
 			{
 				dad.skipDance = false;
 				notes.forEachAlive(function(daNote:Note)
@@ -5127,8 +5144,6 @@ class PlayState extends MusicBeatState
 			});
 
 			warning.visible = false;
-			warningSfx.stop();
-			shoot.play(true);
 		}
 	}
 
@@ -5150,18 +5165,18 @@ class PlayState extends MusicBeatState
 					wonType = false;
 					curPos = 0;
 					timeToType = 20;
-					FlxTween.tween(vignette, {alpha: 0}, 0.25);
-					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 0}, 0.25);
-					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 0}, 0.25);
-					FlxTween.tween(inputBar, {alpha: 0}, 0.25);
-					FlxTween.tween(thewordsidk, {alpha: 0}, 0.25); //make it a grp so u can just make all tween together
+					FlxTweenPlayState.tween(vignette, {alpha: 0}, 0.25);
+					FlxTweenPlayState.tween(timebeforeGORGOLOZ, {alpha: 0}, 0.25);
+					FlxTweenPlayState.tween(textToTypeGORGOLOZ, {alpha: 0}, 0.25);
+					FlxTweenPlayState.tween(inputBar, {alpha: 0}, 0.25);
+					FlxTweenPlayState.tween(thewordsidk, {alpha: 0}, 0.25); //make it a grp so u can just make all tween together
 					
 					object.visible = true;
 					object.animation.play(curWord.toLowerCase(), true);
 
 					boyfriend.playAnim('throw', true);
 					boyfriend.specialAnim = true;
-					new FlxTimer().start(0.5, function (t:FlxTimer) { //im using a timer because callbacks arent playing too kind
+					new FlxTimer(timerManager).start(0.5, function (t:FlxTimer) { //im using a timer because callbacks arent playing too kind
 						notes.forEachAlive(function(daNote:Note)
 						{
 							if (!daNote.mustPress) daNote.noAnimation = true;
@@ -5171,7 +5186,7 @@ class PlayState extends MusicBeatState
 						FlxG.sound.play(Paths.sound("explosion"));
 						dad.playAnim('ouch',true);
 						dad.specialAnim = true;
-						new FlxTimer().start(1, function (t:FlxTimer) { //this is stupid as hell but i really do not care
+						new FlxTimer(timerManager).start(1, function (t:FlxTimer) { //this is stupid as hell but i really do not care
 							notes.forEachAlive(function(daNote:Note)
 							{
 								if (!daNote.mustPress) daNote.noAnimation = false;
@@ -5179,7 +5194,7 @@ class PlayState extends MusicBeatState
 						});
 						
 					});
-					new FlxTimer().start(0.25, function (t:FlxTimer) {
+					new FlxTimer(timerManager).start(0.25, function (t:FlxTimer) {
 						thewordsidk.text = '';
 					});
 					
@@ -5235,11 +5250,11 @@ class PlayState extends MusicBeatState
 						boyfriend.specialAnim = true;
 					}
 					
-					FlxTween.tween(vignette, {alpha: 1}, 0.25);
-					FlxTween.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
-					FlxTween.tween(textToTypeGORGOLOZ, {alpha: 1}, 0.25);
-					FlxTween.tween(inputBar, {alpha: 1}, 0.25);
-					FlxTween.tween(thewordsidk, {alpha: 1}, 0.25); //make it a grp so u can just make all tween together
+					FlxTweenPlayState.tween(vignette, {alpha: 1}, 0.25);
+					FlxTweenPlayState.tween(timebeforeGORGOLOZ, {alpha: 1}, 0.25);
+					FlxTweenPlayState.tween(textToTypeGORGOLOZ, {alpha: 1}, 0.25);
+					FlxTweenPlayState.tween(inputBar, {alpha: 1}, 0.25);
+					FlxTweenPlayState.tween(thewordsidk, {alpha: 1}, 0.25); //make it a grp so u can just make all tween together
 		
 					notes.forEachAlive(function(daNote:Note)
 						{
@@ -5249,7 +5264,8 @@ class PlayState extends MusicBeatState
 						
 						});
 		
-					curWord = words[Math.floor(Math.random() * words.length)];
+					curWord = words[order];
+					order++;
 		
 					trace(curWord);
 					timebeforeGORGOLOZ.text = Std.string(timeToType);

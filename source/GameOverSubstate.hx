@@ -9,6 +9,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.FlxSprite;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -19,6 +20,12 @@ class GameOverSubstate extends MusicBeatSubstate
 	var playingDeathSound:Bool = false;
 
 	var stageSuffix:String = "";
+
+	var book:FlxSprite; // IM SO LAZY
+	var book2:FlxSprite;
+	var book3:FlxSprite;
+	var book4:FlxSprite;
+	var book5:FlxSprite;
 
 	public static var characterName:String = 'bf-dead';
 	public static var deathSoundName:String = 'fnf_loss_sfx';
@@ -50,12 +57,46 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		Conductor.songPosition = 0;
 
+		book = new FlxSprite().loadGraphic(Paths.image('bgs/sky')); // im too lazy to rename the vars, can you belive?
+		book.antialiasing = ClientPrefs.globalAntialiasing;
+		book.scale.set(3,3);
+		book.alpha = 0.85;
+		add(book);
+
+		book2 = new FlxSprite().loadGraphic(Paths.image('bgs/stars'));
+		book2.antialiasing = ClientPrefs.globalAntialiasing;
+		book2.scale.set(2.25,2.25);
+		book2.alpha = 0.85;
+		book2.scrollFactor.set(0.5, 0.5);
+		add(book2);
+
+		book3 = new FlxSprite().loadGraphic(Paths.image('bgs/planet'));
+		book3.antialiasing = ClientPrefs.globalAntialiasing;
+		book3.scale.set(2,2);
+		book3.alpha = 0.85;
+		book3.scrollFactor.set(0.85, 0.85);
+		add(book3);
+
+		book4 = new FlxSprite().loadGraphic(Paths.image('bgs/ufo'));
+		book4.antialiasing = ClientPrefs.globalAntialiasing;
+		book4.scale.set(2,2);
+		book4.alpha = 0.85;
+		book4.scrollFactor.set(0.85, 0.85);
+		add(book4);
+
+		book5 = new FlxSprite().loadGraphic(Paths.image('bgs/satbutfull')); // IM EVEN MORE LAZY OK
+		book5.antialiasing = ClientPrefs.globalAntialiasing;
+		book5.scale.set(2,2);
+		book5.alpha = 0.85;
+		book5.scrollFactor.set(0.85, 0.85);
+		add(book5);
+
 		boyfriend = new Boyfriend(x, y, characterName);
 		boyfriend.x += boyfriend.positionArray[0];
 		boyfriend.y += boyfriend.positionArray[1];
 		add(boyfriend);
 
-		camFollow = new FlxPoint(boyfriend.getGraphicMidpoint().x, boyfriend.getGraphicMidpoint().y);
+		camFollow = new FlxPoint(boyfriend.getGraphicMidpoint().x / 2 - 100, boyfriend.getGraphicMidpoint().y / 2 - 200); //i REALLY Have no idea why i did this, it doesn't matter anyway + no one but us 3 will look at this code lol!
 
 		FlxG.sound.play(Paths.sound(deathSoundName));
 		Conductor.changeBPM(100);
@@ -78,7 +119,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		PlayState.instance.callOnLuas('onUpdate', [elapsed]);
 		if(updateCamera) {
-			var lerpVal:Float = CoolUtil.boundTo(elapsed * 0.6, 0, 1);
+			var lerpVal:Float = CoolUtil.boundTo(elapsed * 5, 0, 1);
 			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
 		}
 
@@ -164,7 +205,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (!isEnding)
 		{
 			isEnding = true;
-			boyfriend.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();
 			FlxG.sound.play(Paths.music(endSoundName));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)

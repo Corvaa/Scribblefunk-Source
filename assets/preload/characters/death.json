@@ -1,0 +1,45 @@
+{
+	"animations": [
+		{
+			"loop": false,
+			"offsets": [
+				2736,
+				1456
+			],
+			"anim": "firstDeath",
+			"fps": 24,
+			"name": "BF dies instance ",
+			"indices": []
+		},
+		{
+			"loop": true,
+			"offsets": [
+				710,
+				640
+			],
+			"anim": "deathLoop",
+			"fps": 24,
+			"name": "BF dead loop instance ",
+			"indices": []
+		}
+	],
+	"no_antialiasing": false,
+	"image": "characters/WHOLE",
+	"position": [
+		650,
+		350
+	],
+	"healthicon": "bf",
+	"flip_x": true,
+	"healthbar_colors": [
+		49,
+		176,
+		209
+	],
+	"camera_position": [
+		-600,
+		20
+	],
+	"sing_duration": 4,
+	"scale": 1
+}
