@@ -90,9 +90,9 @@ class CreditsState extends MusicBeatState
 			['Quackerona', 'icon-quack', 'Coder'],
 			['Moabmauler', 'icon-moabi', 'Artist'],
 			['Nendotendo', 'icon-nendo', 'Artist'],
-			['Kaori', 'icon-ap', 'Artist']
+			['Kaori', 'icon-ap', 'Artist'],
 			['Blaire', 'icon-blaire', 'Maxwell Voice'],
-			['Fidy', 'icon-fidy', 'Charter']
+			['Fidy', 'icon-fidy', 'Charter'],
 			['Psych Engine Team'],
 			['Shadow Mario',		'shadowmario',		'Main Programmer of Psych Engine',								'https://twitter.com/Shadow_Mario_',	'444444'],
 			['RiverOaken',			'river',			'Main Artist/Animator of Psych Engine',							'https://twitter.com/RiverOaken',		'B42F71'],
