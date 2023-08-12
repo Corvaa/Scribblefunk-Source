@@ -14,7 +14,7 @@ import flixel.FlxSprite;
 class GameOverSubstate extends MusicBeatSubstate
 {
 	public var boyfriend:Boyfriend;
-	var camFollow:FlxPoint;
+	var camFollow:FlxObject;
 	var camFollowPos:FlxObject;
 	var updateCamera:Bool = false;
 	var playingDeathSound:Bool = false;
@@ -96,20 +96,13 @@ class GameOverSubstate extends MusicBeatSubstate
 		boyfriend.y += boyfriend.positionArray[1];
 		add(boyfriend);
 
-		camFollow = new FlxPoint(boyfriend.getGraphicMidpoint().x / 2 - 100, boyfriend.getGraphicMidpoint().y / 2 - 200); //i REALLY Have no idea why i did this, it doesn't matter anyway + no one but us 3 will look at this code lol!
+		camFollow = new FlxObject(400,150); //i REALLY Have no idea why i did this, it doesn't matter anyway + no one but us 3 will look at this code lol!
+		FlxG.camera.follow(camFollow);
 
 		FlxG.sound.play(Paths.sound(deathSoundName));
 		Conductor.changeBPM(100);
-		// FlxG.camera.followLerp = 1;
-		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
-		FlxG.camera.scroll.set();
-		FlxG.camera.target = null;
 
 		boyfriend.playAnim('firstDeath');
-
-		camFollowPos = new FlxObject(0, 0, 1, 1);
-		camFollowPos.setPosition(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2));
-		add(camFollowPos);
 	}
 
 	var isFollowingAlready:Bool = false;
@@ -118,10 +111,6 @@ class GameOverSubstate extends MusicBeatSubstate
 		super.update(elapsed);
 
 		PlayState.instance.callOnLuas('onUpdate', [elapsed]);
-		if(updateCamera) {
-			var lerpVal:Float = CoolUtil.boundTo(elapsed * 5, 0, 1);
-			camFollowPos.setPosition(FlxMath.lerp(camFollowPos.x, camFollow.x, lerpVal), FlxMath.lerp(camFollowPos.y, camFollow.y, lerpVal));
-		}
 
 		if (controls.ACCEPT)
 		{
@@ -147,13 +136,6 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (boyfriend.animation.curAnim != null && boyfriend.animation.curAnim.name == 'firstDeath')
 		{
-			if(boyfriend.animation.curAnim.curFrame >= 12 && !isFollowingAlready)
-			{
-				FlxG.camera.follow(camFollowPos, LOCKON, 1);
-				updateCamera = true;
-				isFollowingAlready = true;
-			}
-
 			if (boyfriend.animation.curAnim.finished && !playingDeathSound)
 			{
 				if (PlayState.SONG.stage == 'tank')
