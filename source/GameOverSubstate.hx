@@ -45,6 +45,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		instance = this;
 		PlayState.instance.callOnLuas('onGameOverStart', []);
+		FlxG.camera.zoom = 0.65;
 
 		super.create();
 	}
