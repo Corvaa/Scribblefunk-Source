@@ -34,6 +34,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public static var instance:GameOverSubstate;
 
+	var blackScreen:FlxSprite;
+
 	public static function resetVariables() {
 		characterName = 'bf-dead';
 		deathSoundName = 'fnf_loss_sfx';
@@ -97,6 +99,17 @@ class GameOverSubstate extends MusicBeatSubstate
 		boyfriend.y += boyfriend.positionArray[1];
 		add(boyfriend);
 
+		blackScreen = new FlxSprite().makeGraphic(Std.int(FlxG.width * 7), Std.int(FlxG.height * 7), FlxColor.BLACK);
+		blackScreen.screenCenter();
+		blackScreen.alpha = 0;
+		add(blackScreen);
+
+		if(PlayState.diedByExplosion == true)
+			{
+				blackScreen.alpha = 1;
+				FlxG.camera.filtersEnabled = false;
+			}
+
 		camFollow = new FlxObject(400,150); //i REALLY Have no idea why i did this, it doesn't matter anyway + no one but us 3 will look at this code lol!
 		FlxG.camera.follow(camFollow);
 
@@ -127,9 +140,9 @@ class GameOverSubstate extends MusicBeatSubstate
 
 			WeekData.loadTheFirstEnabledMod();
 			if (PlayState.isStoryMode)
-				MusicBeatState.switchState(new StoryMenuState());
+				MusicBeatState.switchState(new MainMenuState());
 			else
-				MusicBeatState.switchState(new FreeplayState());
+				MusicBeatState.switchState(new MainMenuState());
 
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.instance.callOnLuas('onGameOverConfirm', [false]);
