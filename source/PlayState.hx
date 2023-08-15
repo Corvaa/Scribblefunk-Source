@@ -338,8 +338,6 @@ class PlayState extends MusicBeatState
 		'Nuclear Warhead'
 	];
 
-	var order:Int = 0;
-
 	var offsets:Map<String, Array<FlxPoint>> = [
 		"Football" => [new FlxPoint(41, 94), new FlxPoint(41, 94), new FlxPoint(34, 96), new FlxPoint(34, 96), new FlxPoint(67, 107), new FlxPoint(67, 107), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90)],
 		"Globe" => [new FlxPoint(78, 108), new FlxPoint(78, 108), new FlxPoint(85, 103), new FlxPoint(85, 103), new FlxPoint(114, 118), new FlxPoint(114, 118), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103)],
@@ -5320,8 +5318,7 @@ class PlayState extends MusicBeatState
 						
 						});
 		
-					curWord = words[order];
-					order++;
+					curWord = words[FlxG.random.int(0, 4)];
 		
 					trace(curWord);
 					timebeforeGORGOLOZ.text = Std.string(timeToType);
