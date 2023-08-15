@@ -43,26 +43,37 @@ class MusicBeatState extends FlxUIState
 		FlxTransitionableState.skipNextTransOut = false;
 	}
 
+	var oldStep:Int = 0;
+
 	override function update(elapsed:Float)
 	{
 		//everyStep();
-		var oldStep:Int = curStep;
 
 		updateCurStep();
 		updateBeat();
 
-		if (oldStep != curStep)
+		if (curStep > oldStep)
 		{
-			if(curStep > 0)
+			if(curStep > oldStep + 1) //step was skipped
+			{
+				for (i in oldStep + 1...curStep + 1)
+				{
+					curStep = i;
+					stepHit();
+				}
+			}
+			else
 				stepHit();
 
 			if(PlayState.SONG != null)
-			{
-				if (oldStep < curStep)
-					updateSection();
-				else
-					rollbackSection();
-			}
+				updateSection();
+
+			oldStep = curStep;
+		}
+		else
+		{
+			if(PlayState.SONG != null)
+			    rollbackSection();
 		}
 
 		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
