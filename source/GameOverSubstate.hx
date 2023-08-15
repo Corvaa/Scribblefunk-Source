@@ -113,7 +113,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		camFollow = new FlxObject(400,150); //i REALLY Have no idea why i did this, it doesn't matter anyway + no one but us 3 will look at this code lol!
 		FlxG.camera.follow(camFollow);
 
-		FlxG.sound.play(Paths.sound(deathSoundName));
+		if(PlayState.diedByExplosion == true)
+			{
+				FlxG.sound.play(Paths.sound('maxwell_rocket_launcher_death'));
+			}
+		else
+			{
+				FlxG.sound.play(Paths.sound('max_fucking_blows_up'));
+			}
 		Conductor.changeBPM(100);
 
 		boyfriend.playAnim('firstDeath');
