@@ -338,8 +338,6 @@ class PlayState extends MusicBeatState
 		'Nuclear Warhead'
 	];
 
-	var order:Int = 0;
-
 	var offsets:Map<String, Array<FlxPoint>> = [
 		"Football" => [new FlxPoint(41, 94), new FlxPoint(41, 94), new FlxPoint(34, 96), new FlxPoint(34, 96), new FlxPoint(67, 107), new FlxPoint(67, 107), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(78, 111), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90), new FlxPoint(12, 90)],
 		"Globe" => [new FlxPoint(78, 108), new FlxPoint(78, 108), new FlxPoint(85, 103), new FlxPoint(85, 103), new FlxPoint(114, 118), new FlxPoint(114, 118), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(118, 114), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103), new FlxPoint(52, 103)],
@@ -381,13 +379,6 @@ class PlayState extends MusicBeatState
 
 	var thewordsidk:FlxText;
 	var object:FlxSprite;
-
-	var dodgeCount:FlxText;
-
-	var warningflash:FlxSprite;
-
-	public static var diedByExplosion:Bool = false;
-
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -1297,14 +1288,6 @@ class PlayState extends MusicBeatState
 		thewordsidk.antialiasing = ClientPrefs.globalAntialiasing;
 		add(thewordsidk);
 
-		dodgeCount = new FlxText(0,0,FlxG.width, '3', 32);
-		dodgeCount.setFormat(Paths.font("man_monster_ahh.otf"), 128, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		dodgeCount.borderSize = 5;
-		dodgeCount.alpha = 0;
-		dodgeCount.y = inputBar.y - 25;
-		dodgeCount.antialiasing = ClientPrefs.globalAntialiasing;
-		add(dodgeCount);
-
 		object = new FlxSprite(250, 250);
 		object.frames = Paths.getSparrowAtlas("throwables", "shared");
 		object.scale.set(0.9, 0.9);
@@ -1321,22 +1304,14 @@ class PlayState extends MusicBeatState
 		warning.frames = Paths.getSparrowAtlas("HOLYSHIT", "shared");
 		warning.animation.addByPrefix("warn", "Symbol 1 instance 1", 24, false);
 		warning.screenCenter();
-		warning.scale.set(0.65,0.65);
 		add(warning);
 		warning.visible = false;
-
-		warningflash = new FlxSprite(-600, 100).loadGraphic(Paths.image('warning'));
-		warningflash.alpha = 0;
-		warningflash.screenCenter(XY);
-		add(warningflash);
 
 		thewordsidk.cameras = [camOther];
 
 		vignette.cameras = [camOther];
 		timebeforeGORGOLOZ.cameras = [camOther];
 		textToTypeGORGOLOZ.cameras = [camOther];
-		dodgeCount.cameras = [camOther];
-		warningflash.cameras = [camHUD];
 
 		warning.camera = camHUD;
 		popup.camera = camExt;
@@ -1541,7 +1516,7 @@ class PlayState extends MusicBeatState
 	
 		#if desktop
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 		#end
 
 		if(!ClientPrefs.controllerMode)
@@ -2505,8 +2480,6 @@ class PlayState extends MusicBeatState
 	function startSong():Void
 	{
 		startingSong = false;
-		
-		dodgeCount.text = "3";
 
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
@@ -2545,7 +2518,7 @@ class PlayState extends MusicBeatState
 
 		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, SONG.song, true, songLength);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength);
 		#end
 		setOnLuas('songLength', songLength);
 		callOnLuas('onSongStart', []);
@@ -2960,11 +2933,11 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer != null && startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song , true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 			}
 			#end
 		}
@@ -2979,11 +2952,11 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song, true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter(), true, songLength - Conductor.songPosition - ClientPrefs.noteOffset);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 			}
 		}
 		#end
@@ -2996,7 +2969,7 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 		}
 		#end
 
@@ -3038,11 +3011,6 @@ class PlayState extends MusicBeatState
 		if(timeToType == 0)
 			{
 				health -= 80085; //tits*
-			}
-		
-		if(diedByExplosion == true)
-			{
-				dodgeCount.text = 'RIP';
 			}
 
 		switch (curStage)
@@ -3519,7 +3487,7 @@ class PlayState extends MusicBeatState
 		//}
 
 		#if desktop
-		DiscordClient.changePresence(detailsPausedText, SONG.song);
+		DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 		#end
 	}
 
@@ -3558,13 +3526,14 @@ class PlayState extends MusicBeatState
 				for (timer in modchartTimers) {
 					timer.active = true;
 				}
-				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x - boyfriend.positionArray[0], boyfriend.getScreenPosition().y - boyfriend.positionArray[1], camFollowPos.x, camFollowPos.y));
+
+				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x - boyfriend.positionArray[0], boyfriend.getScreenPosition().y - boyfriend.positionArray[1], camFollowPos.x - 200, camFollowPos.y - 100));
 
 				// MusicBeatState.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 				#if desktop
 				// Game Over doesn't get his own variable because it's only used here
-				DiscordClient.changePresence("Game Over - " + detailsText, SONG.song);
+				DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconP2.getCharacter());
 				#end
 				isDead = true;
 				return true;
@@ -3774,30 +3743,8 @@ class PlayState extends MusicBeatState
 				}
 
 			case 'Dodge':
-				dodgeCount.alpha = 1;
-				warningflash.alpha = 1;
-				FlxTween.tween(warningflash, {alpha: 0}, 0.25, {ease: FlxEase.circOut});
 				warning.visible = true;
 				warning.animation.play("warn", true);
-
-				new FlxTimer().start(0.29, function(tmr:FlxTimer)
-					{
-						dodgeCount.text = "2";
-						warningflash.alpha = 1;
-						FlxTween.tween(warningflash, {alpha: 0}, 0.25, {ease: FlxEase.circOut});
-					});
-				new FlxTimer().start(0.57, function(tmr:FlxTimer)
-					{
-						dodgeCount.text = "1";
-						warningflash.alpha = 1;
-						FlxTween.tween(warningflash, {alpha: 0}, 0.25, {ease: FlxEase.circOut});
-					});
-				new FlxTimer().start(0.67, function(tmr:FlxTimer)
-					{
-						dodgeCount.text = "NOW";
-						warningflash.alpha = 1;
-						FlxTween.tween(warningflash, {alpha: 0}, 0.25, {ease: FlxEase.circOut});
-					});
 
 				notes.forEachAlive(function(daNote:Note)
 				{
@@ -3810,9 +3757,8 @@ class PlayState extends MusicBeatState
 
 				FlxG.sound.play(Paths.sound("tick"), 1, false, null, true, function(){
 					FlxG.sound.play(Paths.sound("boom"));
-					dodgeTimer.start(0.45, function(e:FlxTimer) //it was a lil harsh
+					dodgeTimer.start(0.2, function(e:FlxTimer)
 					{
-						diedByExplosion = true;
 						health = -1;
 					});
 					shouldDodge = true;
@@ -5176,9 +5122,6 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.SPACE) 
 		{
 			dodgeTimer.cancel();
-
-			dodgeCount.text = '3';
-			dodgeCount.alpha = 0;
 			
 			notes.forEachAlive(function(daNote:Note)
 			{
@@ -5320,8 +5263,7 @@ class PlayState extends MusicBeatState
 						
 						});
 		
-					curWord = words[order];
-					order++;
+					curWord = words[FlxG.random.int(0, 4)];
 		
 					trace(curWord);
 					timebeforeGORGOLOZ.text = Std.string(timeToType);
